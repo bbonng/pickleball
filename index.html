@@ -1,0 +1,592 @@
+<meta name="robots" content="noindex,nofollow">
+<title>피클볼 수업 나눔</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap&text=%20%25./0123456789%3F%EA%B0%84%EA%B2%8C%EA%B3%B5%EA%B9%8C%EB%82%98%EB%88%94%EB%8B%88%EB%96%BB%EB%9D%BC%EB%A9%B4%EB%B3%BC%EB%B6%84%EC%83%98%EC%85%94%EC%88%98%EC%8A%A4%EC%8B%9C%EC%96%B4%EC%97%85%EC%9D%84%EC%9E%98%EC%B9%9C%EC%BD%95%ED%81%B4%ED%82%A4%ED%8A%B8%ED%8B%80%ED%94%84%ED%94%BC%ED%95%98%ED%95%A9">
+<style>
+  /* 한 가지 모습으로 고정: 야외 햇빛 아래 가독성 기준 (다크모드 없음) */
+  :root{
+    --court:#1C3D6B;      /* 하드코트 블루 */
+    --court-deep:#12294A;
+    --surround:#2F6B4B;   /* 코트 바깥 그린 */
+    --line:#F2F4EE;       /* 코트 라인 화이트 = 자료 바탕 */
+    --ball:#F4D23C;       /* 야외용 피클볼 옐로 */
+    --ink:#10160F;
+    --muted:#56645A;
+    --rule:#D5DBCF;
+    --display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --body:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  }
+  html,body{background:var(--line);color:var(--ink);font-family:var(--body);}
+  *{box-sizing:border-box}
+  body{word-break:keep-all}
+
+  /* ── 시퀀스 무대 ───────────────────────── */
+  .stage{position:relative;width:100%;height:100vh;height:100svh;overflow:hidden;background:var(--court-deep);color:var(--line);isolation:isolate;}
+  #cv{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .45s ease;}
+  .photo{position:absolute;inset:0;opacity:0;transition:opacity .6s ease, filter .8s ease;}
+  .photo > *{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 60%;}
+  .scrim{position:absolute;inset:0;background:rgba(10,20,14,.0);transition:background .9s ease;pointer-events:none;}
+  .flood{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:var(--ball);transform:scale(0);pointer-events:none;}
+  .word{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:400;
+        font-size:min(38vw,30svh);letter-spacing:-.02em;line-height:1;color:var(--line);opacity:0;transform:scale(1.08);
+        transition:opacity .9s ease, transform 1.4s cubic-bezier(.2,.7,.2,1), color .5s ease .15s;pointer-events:none;}
+  .stage.s-photo #cv{opacity:0}
+  .stage.s-photo .photo{opacity:1}
+  .stage.s-photo .photo > *{animation:kb 5.5s cubic-bezier(.3,.1,.3,1) forwards}
+  .stage.s-word .scrim{background:rgba(10,20,14,.45)}
+  .stage.s-word .word{opacity:1;transform:scale(1)}
+  .stage.s-flood .flood{transition:transform .75s cubic-bezier(.7,0,.25,1);transform:scale(var(--cover,60))}
+  .stage.s-flood .word{color:var(--ink)}
+  .stage.s-flood .photo{filter:blur(6px) saturate(.4)}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.14)}}
+
+  .start{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;
+         padding:0 24px calc(40px + env(safe-area-inset-bottom,0px));border:0;background:var(--court-deep);color:var(--line);
+         text-align:left;font:inherit;cursor:pointer;}
+  .start:focus-visible{outline:3px solid var(--ball);outline-offset:-6px}
+  .start .ballmark{width:56px;height:56px;margin-bottom:auto;margin-top:calc(40px + env(safe-area-inset-top,0px));}
+  .start .who{font-size:13px;letter-spacing:.04em;color:rgba(242,244,238,.7)}
+  .start .ttl{font-family:var(--display);font-size:clamp(40px,12vw,64px);line-height:1.05}
+  .start .go{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font-size:16px;font-weight:600;color:var(--ball)}
+  .start .go::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--ball);animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{50%{transform:scale(1.7);opacity:.5}}
+  .start[hidden]{display:none}
+
+  /* ── 슬라이드 ─────────────────────────── */
+  .deck{position:absolute;inset:0;z-index:6;touch-action:pan-y;-webkit-user-select:none;user-select:none;opacity:0;transition:opacity .4s ease;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .deck.on{opacity:1}
+  .deck[hidden]{display:none}
+  .d-bg{position:absolute;inset:0;background:var(--ball)}
+  .d-grow{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;transform:scale(0);pointer-events:none}
+  .d-word{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 6vw;font-family:var(--display);line-height:1.04;
+          letter-spacing:-.02em;white-space:pre-line;transition:opacity .2s ease, transform .55s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+  .d-word.out{opacity:0;transform:translateY(14px)}
+  .d-word.xl{font-size:min(38vw,30svh)}
+  .d-word.l{font-size:min(27vw,22svh)}
+  .d-word.ml{font-size:min(20vw,15svh)}
+  .d-word.m{font-size:min(12.5vw,9svh)}
+  .d-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 18px 0}
+  .d-count{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+  .d-btn{border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .d-bottom{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:0 18px calc(22px + env(safe-area-inset-bottom,0px))}
+  .d-link{color:inherit;text-decoration:none;border:1.5px solid currentColor;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700}
+  .d-link[hidden]{display:none}
+  .d-docs{margin-left:auto;color:inherit;text-decoration:none;font-size:14px;font-weight:600;opacity:.85}
+  .d-hint{position:absolute;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;font-size:13px;opacity:.7;transition:opacity .4s ease;pointer-events:none}
+  .d-hint.gone{opacity:0}
+  .d-vid{position:absolute;left:0;top:calc(52px + env(safe-area-inset-top,0px));width:100%;
+         height:calc(100% - 124px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));object-fit:contain;pointer-events:none;opacity:0;transition:opacity .35s ease}
+  .d-vid.on{opacity:1}
+  .vidbox{width:100%;max-width:420px;margin:0 auto;aspect-ratio:9/16;border-radius:10px;overflow:hidden;background:var(--ink)}
+  .vidbox video{width:100%;height:100%;display:block;object-fit:cover}
+  .deck.solo .d-link{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:18px;padding:16px 26px;white-space:nowrap}
+  .deck :focus-visible{outline:2px solid currentColor;outline-offset:3px}
+  .group{scroll-margin-top:16px}
+  .steps{margin:0;padding:18px 18px 18px 2.4em;background:#fff;border:1.5px solid var(--rule);border-radius:12px;display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.5}
+  .steps li::marker{font-weight:700;color:var(--court);font-variant-numeric:tabular-nums}
+  .steps li.adv{color:var(--muted)}
+
+  /* ── 자료 ─────────────────────────────── */
+  .docs{padding-inline:max(20px,env(safe-area-inset-left,0px));padding-block:56px 40px;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+  .docs > header p{margin:0 0 6px;font-size:12px;letter-spacing:.12em;color:var(--muted)}
+  .docs > header h2{margin:0;font-size:26px;line-height:1.25;text-wrap:balance}
+  .group{display:flex;flex-direction:column;gap:14px}
+  .group h3{margin:0;font-size:18px;display:flex;align-items:center;gap:10px}
+  .group h3::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ball);box-shadow:0 0 0 1.5px var(--ink)}
+  .tabs{display:flex;gap:6px}
+  .tabs button{flex:1;border:1.5px solid var(--rule);background:transparent;color:var(--muted);border-radius:10px;padding:10px 0;font:inherit;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+  .tabs button[aria-selected="true"]{border-color:var(--court);background:var(--court);color:var(--line)}
+  .tabs button:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+
+  .sheet{position:relative;width:100%;max-width:100%;aspect-ratio:1/1.414;border:1.5px solid var(--rule);border-radius:6px;background:#fff;
+         padding:0;cursor:zoom-in;overflow:hidden;display:block;font:inherit;color:inherit}
+  .sheet:focus-visible{outline:2px solid var(--court);outline-offset:3px}
+  .sheet .ph{position:absolute;inset:9% 10%;background:repeating-linear-gradient(to bottom,#E7EBE2 0 7px,transparent 7px 22px);}
+  .sheet .ph::before{content:"";position:absolute;left:0;top:0;width:55%;height:14px;background:#D5DBCF}
+  .sheet .lbl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--line);border:1.5px dashed var(--muted);
+              border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted);white-space:nowrap}
+  .sheet img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
+
+  .rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-inline:-20px;padding-inline:20px;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .ans{flex:0 0 80%;max-width:420px;margin:0;scroll-snap-align:center;display:flex;flex-direction:column;gap:12px}
+  .ans blockquote{margin:0;min-height:7.2em;display:flex;align-items:flex-end;font-size:19px;line-height:1.5;font-weight:700;letter-spacing:-.01em;
+                  padding:0 0 0 14px;border-left:5px solid var(--ball)}
+  .ans .sheet{margin-top:auto}
+  .q{display:flex;flex-direction:column;gap:12px;padding:20px 18px;border-radius:12px;background:#fff;border:1.5px solid var(--rule);font-size:15.5px;line-height:1.65}
+  .q p{margin:0}
+  .q[hidden]{display:none}
+  .q-meta{font-size:13px;color:var(--muted);padding-bottom:10px;border-bottom:1px dashed var(--rule)}
+  .q-list{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:12px}
+  .q-list li::marker{font-weight:700;color:var(--court)}
+  .q-note{color:var(--muted);font-size:13.5px}
+  .cmp{display:flex;flex-direction:column;gap:10px}
+  .cmp[hidden]{display:none}
+  .yr{padding:16px 16px 14px;border-radius:12px;background:#fff;border:1.5px solid var(--rule);font-size:15.5px;line-height:1.6}
+  .yr .tag{display:inline-block;margin-bottom:8px;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted);font-variant-numeric:tabular-nums}
+  .yr p{margin:0}
+  .y26{border-color:var(--court);border-width:2px}
+  .y26 .tag{color:var(--court)}
+  .y24 mark{background:#F6D8D0;color:var(--ink);border-radius:3px;padding:0 3px}
+  .y26 mark{background:var(--ball);color:var(--ink);border-radius:3px;padding:0 3px}
+  .y25{background:#FAFBF8}
+  .cmp details{font-size:14px;color:var(--muted);padding:12px 14px;border:1.5px dashed var(--rule);border-radius:10px}
+  .cmp details p{margin:8px 0 0;line-height:1.55}
+  .cmp summary{cursor:pointer;font-weight:600}
+  .note{margin:0;font-size:14.5px;line-height:1.6;padding:12px 14px;background:#fff;border:1.5px solid var(--rule);border-left:5px solid var(--ball);border-radius:8px}
+  .sheet.wide{aspect-ratio:1.414/1}
+  .sheet.exam26{aspect-ratio:1000/647}
+  .q .sub{margin:6px 0 0;padding-top:14px;border-top:1px dashed var(--rule);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--court);scroll-margin-top:16px}
+  .q .none{margin:0;font-size:13.5px;color:var(--muted)}
+  .q .rail{margin-inline:-18px;padding-inline:18px}
+  .papers .sheet{flex:0 0 62%;scroll-snap-align:start}
+  .q .ans blockquote{font-size:17px}
+  .q-lead{color:var(--muted)}
+  .q-main{font-weight:700}
+  .q-scenes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+  .q-scenes li{display:grid;grid-template-columns:1.6em 1fr;padding:10px 12px;background:var(--line);border-radius:8px}
+  .q-scenes b{color:var(--court)}
+  .q-ask{font-size:14.5px}
+  .q-score{font-size:13px;color:var(--muted);padding-top:10px;border-top:1px dashed var(--rule);font-variant-numeric:tabular-nums}
+  .hint{margin:0;font-size:13px;color:var(--muted)}
+
+  footer{padding:28px 20px calc(32px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted);line-height:1.6;max-width:720px;margin:0 auto}
+
+  /* 전체 화면 보기 */
+  .viewer{position:fixed;inset:0;z-index:20;background:rgba(16,22,15,.94);display:flex;flex-direction:column;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));}
+  .viewer[hidden]{display:none}
+  .viewer .bar{display:flex;justify-content:space-between;align-items:center;color:var(--line);padding:4px 6px 10px;font-size:14px}
+  .viewer .bar button{border:0;background:var(--ball);color:var(--ink);border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer}
+  .viewer .pane{flex:1;overflow:auto;display:grid;place-items:center;touch-action:pinch-zoom pan-x pan-y}
+  .viewer .pane .sheet{width:min(100%,560px);cursor:default}
+
+  @media (prefers-reduced-motion:reduce){
+    .start .go::before,.ctrl a span{animation:none}
+    .stage.s-photo .photo > *{animation:none}
+  }
+</style>
+
+<section class="stage" id="stage" aria-label="오프닝">
+  <canvas id="cv" aria-hidden="true"></canvas>
+
+  <!-- 사진 자리: 테니스장 전경 사진이 오면 아래 svg를 <img src="court.jpg" alt="대구일중 테니스장"> 로 바꿉니다 -->
+  <div class="photo" aria-hidden="true">
+    <svg viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="640" fill="#2F6B4B"/>
+      <g fill="#1C3D6B"><rect x="14" y="196" width="104" height="236"/><rect x="128" y="196" width="104" height="236"/><rect x="242" y="196" width="104" height="236"/></g>
+      <g fill="none" stroke="#F2F4EE" stroke-width="1.6">
+        <g id="c"><rect x="22" y="206" width="88" height="216"/><line x1="33" y1="206" x2="33" y2="422"/><line x1="99" y1="206" x2="99" y2="422"/>
+          <line x1="33" y1="256" x2="99" y2="256"/><line x1="33" y1="372" x2="99" y2="372"/><line x1="66" y1="256" x2="66" y2="372"/></g>
+        <use href="#c" x="114"/><use href="#c" x="228"/>
+      </g>
+      <g stroke="#10160F" stroke-width="2.2"><line x1="16" y1="314" x2="116" y2="314"/><line x1="130" y1="314" x2="230" y2="314"/><line x1="244" y1="314" x2="344" y2="314"/></g>
+      <rect x="0" y="0" width="360" height="640" fill="url(#g)"/>
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".25"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient></defs>
+      <text x="180" y="600" text-anchor="middle" font-size="11" fill="#F2F4EE" fill-opacity=".7" font-family="sans-serif">사진 자리 · 테니스장 전경</text>
+    </svg>
+  </div>
+  <div class="scrim"></div>
+  <div class="flood" id="flood"></div>
+  <div class="word" id="word">공간</div>
+
+  <div class="deck" id="deck" hidden>
+    <div class="d-bg" id="dbg"></div>
+    <div class="d-grow" id="dgrow"></div>
+    <div class="d-word xl" id="dword">공간</div>
+    <video class="d-vid" id="dvid" src="class3y.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+    <div class="d-top"><span class="d-count" id="dcount" aria-live="polite">1 / 12</span><button type="button" class="d-btn" id="replay">처음부터</button></div>
+    <p class="d-hint" id="dhint">화면을 누르면 다음 장</p>
+    <div class="d-bottom"><a class="d-link" id="dlink" href="#docs" hidden></a><a class="d-docs" href="#docs">자료 ↓</a></div>
+  </div>
+
+  <button class="start" id="start" type="button">
+    <svg class="ballmark" viewBox="0 0 56 56" aria-hidden="true">
+      <circle cx="28" cy="28" r="26" fill="#F4D23C"/>
+      <g fill="#C9A61E"><circle cx="28" cy="28" r="3"/><circle cx="41" cy="28" r="3"/><circle cx="15" cy="28" r="3"/><circle cx="28" cy="15" r="3"/><circle cx="28" cy="41" r="3"/><circle cx="37" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><circle cx="37" cy="37" r="3"/><circle cx="19" cy="37" r="3"/></g>
+    </svg>
+    <span class="who">2026 중등체육교육연구회 · 대구일중 이길봉</span>
+    <span class="ttl">피클볼<br>수업 나눔</span>
+    <span class="go">누르면 시작합니다</span>
+  </button>
+</section>
+
+<main class="docs" id="docs">
+  <header>
+    <p>자료</p>
+    <h2>수업과 평가</h2>
+  </header>
+
+  <section class="group" id="d-ball">
+    <h3>1차시 · 그립법과 공튀기기</h3>
+    <ol class="steps">
+      <li>손등이 하늘로 가게 해서 튀기기</li>
+      <li>손바닥 위로 그립 잡고 튀기기</li>
+      <li>양면 쓰기</li>
+      <li>라켓 면이 아닌 날로 치기</li>
+      <li class="adv">공 세우기</li>
+      <li class="adv">세운 공으로 라켓 면 돌리기</li>
+    </ol>
+    <p class="hint">5·6단계는 3단계까지 30개, 50개 치는 학생에게 알려줍니다.</p>
+  </section>
+
+  <section class="group" id="d-check">
+    <h3>2024 경기평가 체크리스트</h3>
+    <button type="button" class="sheet wide" data-title="2024 경기평가 체크리스트"><img src="check2024.jpg" alt="2024 피클볼 경기평가 체크리스트" loading="lazy"></button>
+    <p class="note">한 학생당 12항목을 상·중·하로. 한 반 31명이면 372번, 45분 수업이면 7초에 한 번씩 판정해야 합니다.</p>
+  </section>
+
+  <section class="group" id="d-video">
+    <h3>수업 영상</h3>
+    <div class="vidbox"><video src="class3y.mp4" poster="class3y.jpg" controls muted playsinline preload="auto"></video></div>
+    <p class="hint">2026년 수업을 2초씩 이어 붙인 영상입니다.</p>
+  </section>
+
+  <section class="group" data-panels id="d-plan">
+    <h3>평가계획서 · 채점 기준</h3>
+    <p class="note">배점은 3년 동안 그대로입니다. 서브 20 · 리턴 앤 발리 30 · 경기 40 · 서술형 10. 바뀐 것은 만점 문장입니다.</p>
+    <div class="tabs" role="tablist" aria-label="평가 요소">
+      <button type="button" role="tab" aria-selected="true" data-p="p-serve">서브 20</button>
+      <button type="button" role="tab" aria-selected="false" data-p="p-return">리턴 30</button>
+      <button type="button" role="tab" aria-selected="false" data-p="p-game">경기 40</button>
+      <button type="button" role="tab" aria-selected="false" data-p="p-essay">서술형 10</button>
+    </div>
+
+    <div class="cmp" id="p-serve">
+      <div class="yr y24"><span class="tag">2024 · 20점</span><p>서비스 코트 위치에서 안정적인 스트록으로 일관성 있게 서브를 구사함.</p></div>
+      <div class="yr y25"><span class="tag">2025 · 20점</span><p>서비스 코트에서 안정적인 스트록으로 일관성 있게 서브를 구사함.</p></div>
+      <div class="yr y26"><span class="tag">2026 · 20점</span><p>서브 코트에서 안정적인 <mark>언더핸드</mark> 스트록으로 서브를 정확하게 구사함.</p></div>
+    </div>
+
+    <div class="cmp" id="p-return" hidden>
+      <div class="yr y24"><span class="tag">2024 · 30점</span><p>서비스 리턴 후 <mark>부드럽고 정확한 스텝으로 이동</mark>하여 논 발리존을 침범하지 않고 정확한 임팩트로 발리 공격전술을 구사함.</p></div>
+      <div class="yr y25"><span class="tag">2025 · 30점</span><p>서비스 리턴을 강하고 길게 구사할 수 있으며 논 발리존을 침범하지 않고 정확한 임팩트로 발리를 구사함.</p></div>
+      <div class="yr y26"><span class="tag">2026 · 30점</span><p>서브 리턴을 강하고 길게 구사할 수 있으며, <mark>경기규칙을 준수</mark>하고 정확한 임펙트로 발리를 구사함.</p></div>
+    </div>
+
+    <div class="cmp" id="p-game" hidden>
+      <div class="yr y24"><span class="tag">2024 · 40점</span><p>경기 수행에 필요한 기초 기능(포핸드, <mark>백핸드</mark>, <mark>딩크샷</mark>, 발리)을 상대의 수비전술을 고려하여 상황에 맞게 적절하고 다양하게 구사함.</p></div>
+      <div class="yr y25"><span class="tag">2025 · 40점</span><p>경기중 상대의 수비 전술을 고려하여 적절한 스트로크(포핸드, 백핸드, 딩크샷, 발리 등)를 다양하게 구사 할 수 있음.</p></div>
+      <div class="yr y26"><span class="tag">2026 · 40점</span><p>경기 상황에 맞는 <mark>스트록과 전략을 정확히 판단하여</mark> 능숙하게 적용함.</p></div>
+    </div>
+
+    <div class="cmp" id="p-essay" hidden>
+      <div class="yr y24"><span class="tag">2024 · 10점</span><p>피클볼의 경기 특성에 대해 정확하고 상세하게 잘 설명함. <mark>자신의 경기 경험을 포함</mark>하여 경기 전략을 잘 설명함.</p></div>
+      <div class="yr y25"><span class="tag">2025 · 10점</span><p>피클볼의 경기 특성을 정확하고 상세하게 잘 설명하고 경기 규칙에 대해 상세히 알고 있음.</p></div>
+      <div class="yr y26"><span class="tag">2026 · 10점</span><p>피클볼의 경기 특성을 상세하게 설명하고, <mark>경기 규칙을 정확하게 적용</mark>함.</p></div>
+    </div>
+
+    <p class="q-score">성취기준 [9체03-09]~[9체03-12] (2015 개정) → [9체02-16]·[9체02-17]·[9체02-18] (2022 개정)<br>2026 신설 · AI 활용: 실기는 불가, 서술형은 자료 조사까지만 허용하고 결과물은 직접 작성</p>
+  </section>
+
+  <section class="group" data-panels>
+    <h3>서술형 평가</h3>
+    <div class="tabs" role="tablist" aria-label="서술형 문항 연도">
+      <button type="button" role="tab" aria-selected="false" data-p="q24">2024</button>
+      <button type="button" role="tab" aria-selected="false" data-p="q25">2025</button>
+      <button type="button" role="tab" aria-selected="true" data-p="q26">2026</button>
+    </div>
+
+    <div class="q" id="q24" hidden>
+      <p class="q-meta">읽기 자료: 신문 기사 발췌 「네트경기에선 서브가 반이다」 · 문항 3개</p>
+      <ol class="q-list">
+        <li>자신이 체육교사라면 학생들에게 피클볼 서브를 어떻게 지도할 것인지 서술하시오.</li>
+        <li>피클볼 복식경기는 서브를 넣는 방식이 다른 네트형 경쟁스포츠와 차이가 있습니다. 어떠한 차이가 있는지 쓰고, 주어진 상황에서 서브를 구사하는 위치와 다음에 서브를 넣는 사람 위치까지 표시하시오. <span class="q-note">(코트 그림에 표시)</span></li>
+        <li>앞 기사에 나와 있는 스포츠들과의 차이를 만든 피클볼만의 독특한 규칙 또는 장비의 차이점을 서술해 보세요. (3가지 이상)</li>
+      </ol>
+      <p class="q-score">10점 3문제 모두 정확 · 8점 2문제 · 6점 1문제 · 4점 모두 틀림</p>
+      <p class="sub">시험지 원본</p>
+      <div class="rail papers">
+        <button type="button" class="sheet" data-title="2024 시험지 1쪽"><img src="e24-1.jpg" alt="2024 시험지 1쪽" loading="lazy"></button>
+        <button type="button" class="sheet" data-title="2024 시험지 2쪽"><img src="e24-2.jpg" alt="2024 시험지 2쪽" loading="lazy"></button>
+      </div>
+      <p class="none">2024년 학생 답안은 남아 있지 않습니다.</p>
+    </div>
+
+    <div class="q" id="q25" hidden>
+      <p class="q-meta">읽기 자료: 「서비스와 서브 — 경기의 시작, 흐름의 방향을 바꾸다」 테니스·배구·탁구의 서브 (2쪽) · 문항 1개</p>
+      <p class="q-main">피클볼의 서브의 방법을 자세히 설명하시오. 피클볼의 경기양상은 앞에서 설명한 3가지 스포츠와 다른 양상이 나타납니다. 경기 양상이 다른 이유를 서술하시오.</p>
+      <p class="q-score">10점 서브 방법 + 독특한 규칙 2개 이상과 경기 양상을 틀린 내용 없이 서술</p>
+      <p class="sub">시험지 원본</p>
+      <div class="rail papers">
+        <button type="button" class="sheet" data-title="2025 시험지 1쪽 (읽기 자료)"><img src="e25-1.jpg" alt="2025 시험지 1쪽 (읽기 자료)" loading="lazy"></button>
+        <button type="button" class="sheet" data-title="2025 시험지 2쪽"><img src="e25-2.jpg" alt="2025 시험지 2쪽" loading="lazy"></button>
+      </div>
+      <p class="none">2025년 학생 답안은 남아 있지 않습니다.</p>
+    </div>
+
+    <div class="q" id="q26">
+      <p class="q-meta">도입 한 문단 · 경기 장면 2개 · 문항 1개</p>
+      <p class="q-lead">테니스는 강서브로, 배구는 점프 서브로, 탁구는 회전 서브로 네트형 경기에서 서브는 강력한 공격무기이다.</p>
+      <p class="q-main">피클볼 경기를 보면 테니스·배구·탁구와 달리 다음과 같은 장면이 나타난다.</p>
+      <ol class="q-scenes">
+        <li><b>㉠</b>서브를 아무리 잘 넣어도, 서브 한 방으로 점수가 나는 일이 거의 없다.</li>
+        <li><b>㉡</b>선수들이 네트 바로 앞 구역에는 함부로 들어가지 않고, 그 라인 뒤에서 짧은 공을 주고받는다.</li>
+      </ol>
+      <p class="q-ask">㉠의 장면을 만드는 규칙이나 장비의 특성 두 가지 이상을 쓰고, 그것이 어떻게 그런 장면을 만드는지 서술하시오. 또한 ㉡의 장면을 만드는 규칙 한 가지를 쓰고, 그 규칙 때문에 어떤 공격이 불가능해지는지, 그래서 선수들이 왜 짧은 공을 주고받게 되는지 서술하시오.</p>
+      <p class="q-score">10점 4요소 모두 · 8점 3요소 · 6점 2요소 · 4점 1요소 이하</p>
+      <p class="sub">시험지 원본</p>
+      <div class="rail papers">
+        <button type="button" class="sheet" data-title="2026 시험지"><img src="e26.jpg" alt="2026 시험지" loading="lazy"></button>
+      </div>
+      <p class="sub" id="d-answers">학생 답안</p>
+      <div class="rail">
+        <figure class="ans">
+          <blockquote>서브는 무기가 아닌 랠리를 시작하기 위한 것이다.</blockquote>
+          <button type="button" class="sheet" data-title="답안 1"><img src="a1.jpg" alt="2026 서술형 답안 1" loading="lazy"></button>
+        </figure>
+        <figure class="ans">
+          <blockquote>상대가 에러하거나 발리할 수 있게 공을 길게 주는 실수를 하는 기회를 엿보고 네트 앞에서 짧은 공을 주고 받게 된다.</blockquote>
+          <button type="button" class="sheet" data-title="답안 2"><img src="a2.jpg" alt="2026 서술형 답안 2" loading="lazy"></button>
+        </figure>
+        <figure class="ans">
+          <blockquote>이 두 규칙 덕분에 피클볼이 더욱 재미있고, 흥미진진해 지는 것이다.</blockquote>
+          <button type="button" class="sheet" data-title="답안 3"><img src="a3.jpg" alt="2026 서술형 답안 3" loading="lazy"></button>
+        </figure>
+        <figure class="ans">
+          <button type="button" class="sheet" data-title="답안 4"><img src="a4.jpg" alt="2026 서술형 답안 4" loading="lazy"></button>
+        </figure>
+        <figure class="ans">
+          <button type="button" class="sheet" data-title="답안 5"><img src="a5.jpg" alt="2026 서술형 답안 5" loading="lazy"></button>
+        </figure>
+      </div>
+      <p class="hint">옆으로 넘기고, 답안지를 누르면 크게 봅니다.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>대구일중학교 테니스장에서 · 코트 파트 효성여고 권대용 선생님<br>학생 답안은 이름과 학번을 가린 뒤 싣습니다.</footer>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="크게 보기">
+  <div class="bar"><span id="vtitle"></span><button type="button" id="vclose">닫기</button></div>
+  <div class="pane" id="vpane"></div>
+</div>
+
+<script>
+(()=>{
+  const stage=document.getElementById('stage'), cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  const startBtn=document.getElementById('start'), flood=document.getElementById('flood');
+  const C={court:'#1C3D6B',deep:'#12294A',green:'#2F6B4B',line:'#F2F4EE',ball:'#F4D23C',hole:'#C9A61E',ink:'#10160F',face:'#E9EDE4'};
+  let W=0,H=0;
+  function size(){
+    const d=Math.min(2,window.devicePixelRatio||1);
+    W=stage.clientWidth;H=stage.clientHeight;
+    cv.width=Math.round(W*d);cv.height=Math.round(H*d);ctx.setTransform(d,0,0,d,0,0);
+    const cover=Math.hypot(W,H)/40*1.1; flood.style.setProperty('--cover',cover.toFixed(1));
+  }
+  size(); addEventListener('resize',size);
+
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  const out=t=>1-Math.pow(1-t,3);
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  const HOLES=[[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5],[.36,.36],[-.36,.36],[.36,-.36],[-.36,-.36]];
+  function ball(x,y,r,rot,a=1){
+    ctx.save();ctx.globalAlpha=a;ctx.translate(x,y);ctx.rotate(rot);
+    const g=ctx.createRadialGradient(-r*.35,-r*.35,r*.1,0,0,r);g.addColorStop(0,'#FBE77A');g.addColorStop(.7,C.ball);g.addColorStop(1,'#D8B327');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=C.hole;for(const[p,q]of HOLES){ctx.beginPath();ctx.arc(p*r,q*r,r*.1,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+  }
+  function paddle(x,y,s,rot,a=1){
+    ctx.save();ctx.globalAlpha=a;ctx.translate(x,y);ctx.rotate(rot);
+    ctx.fillStyle=C.ink;rr(-s*.09,s*.48,s*.18,s*.6,s*.06);ctx.fill();
+    ctx.fillStyle=C.face;rr(-s*.4,-s*.58,s*.8,s*1.1,s*.3);ctx.fill();
+    ctx.lineWidth=Math.max(2,s*.05);ctx.strokeStyle=C.green;ctx.stroke();
+    ctx.restore();
+  }
+  function bg(c){ctx.fillStyle=c;ctx.fillRect(0,0,W,H);}
+  function mirror(on){if(on){ctx.translate(W,0);ctx.scale(-1,1);}}
+
+  // 1. 옆에서 본 랠리
+  function side(t,flip){
+    bg(C.court);ctx.save();mirror(flip);
+    const fl=H*.72;ctx.strokeStyle=C.line;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,fl);ctx.lineTo(W,fl);ctx.stroke();
+    ctx.lineWidth=2;ctx.globalAlpha=.8;for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(W/2-3+i*1.2,fl-H*.1);ctx.lineTo(W/2-3+i*1.2,fl);ctx.stroke();}
+    ctx.globalAlpha=1;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(W/2,fl-H*.1);ctx.lineTo(W/2,fl);ctx.stroke();
+    const s=Math.min(W,H)*.2, pos=u=>[W*.14+u*W*.72, fl-H*.14-Math.sin(Math.PI*u)*H*.26];
+    paddle(W*.1,fl-H*.14,s,-.9+out(Math.min(1,t*4))*1.5);
+    paddle(W*.9,fl-H*.14,s,.9-Math.max(0,(t-.75)*4)*1.5);
+    const r=Math.min(W,H)*.045;
+    for(let k=6;k>0;k--){const u=Math.max(0,t-k*.035);const[p,q]=pos(u);ball(p,q,r*(1-k*.06),u*9,.12*(7-k)/6);}
+    const[x,y]=pos(t);ball(x,y,r,t*9);
+    ctx.restore();
+  }
+  // 2. 위에서 본 코트
+  function top(t,flip){
+    bg(C.green);ctx.save();ctx.translate(W/2,H/2);ctx.rotate(flip?.14:-.14);
+    const cw=Math.min(W*.66,H*.36),ch=cw*2.2;
+    ctx.fillStyle=C.court;ctx.fillRect(-cw/2,-ch/2,cw,ch);
+    ctx.strokeStyle=C.line;ctx.lineWidth=2.5;ctx.strokeRect(-cw/2,-ch/2,cw,ch);
+    const k=ch/2*.318;
+    ctx.beginPath();ctx.moveTo(-cw/2,-k);ctx.lineTo(cw/2,-k);ctx.moveTo(-cw/2,k);ctx.lineTo(cw/2,k);
+    ctx.moveTo(0,-ch/2);ctx.lineTo(0,-k);ctx.moveTo(0,k);ctx.lineTo(0,ch/2);ctx.stroke();
+    ctx.strokeStyle=C.ink;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-cw/2-8,0);ctx.lineTo(cw/2+8,0);ctx.stroke();
+    const e=ease(t), sx=flip?cw*.3:-cw*.3, x=sx+(-sx*2)*e, y=ch*.38-ch*.76*e, h=Math.sin(Math.PI*e);
+    const r=cw*.07*(1+h*.5);
+    ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(x+h*18,y+h*18,r*.9,r*.55,0,0,Math.PI*2);ctx.fill();
+    for(let i=5;i>0;i--){const u=Math.max(0,e-i*.05),hx=sx+(-sx*2)*u,hy=ch*.38-ch*.76*u;ball(hx,hy,r*.8,0,.08*(6-i));}
+    ball(x,y,r,t*6);
+    ctx.restore();
+  }
+  // 3. 공 클로즈업
+  function close(t){
+    bg(C.deep);const e=out(t),m=Math.min(W,H);
+    const r=m*.12+m*.46*e, x=W*1.15-(W*.65)*e, y=H*.5+Math.sin(t*3)*H*.03;
+    for(let i=4;i>0;i--)ball(x+i*m*.06*(1-e),y,r,e*2.6,.08);
+    ball(x,y,r,e*2.6);
+  }
+  // 4. 패들 스윙
+  function swipe(t,flip){
+    bg(C.court);ctx.save();mirror(flip);
+    const s=Math.min(W,H)*.62, px=W*.5, py=H*.95, e=ease(t);
+    for(let i=5;i>0;i--){const a=-1.7+3.1*Math.max(0,e-i*.045);ctx.save();ctx.translate(px,py);ctx.rotate(a);paddle(0,-s*.9,s,0,.07*(6-i));ctx.restore();}
+    ctx.translate(px,py);ctx.rotate(-1.7+3.1*e);paddle(0,-s*.9,s,0);
+    ctx.restore();
+  }
+  // 5. 마지막: 두 번 튀고 멈춘다
+  function last(t){
+    bg(C.court);const fl=H*.66, r=Math.min(W,H)*.06;
+    ctx.strokeStyle=C.line;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,fl);ctx.lineTo(W,fl);ctx.stroke();
+    const b1=.3,b2=.56,stop=.86, xs=[-.1,.34,.54,.63];
+    let x,y;
+    if(t<b1){const u=t/b1;x=W*(xs[0]+(xs[1]-xs[0])*u);y=fl-r-(1-u*u)*H*.42;}
+    else if(t<b2){const u=(t-b1)/(b2-b1);x=W*(xs[1]+(xs[2]-xs[1])*u);y=fl-r-Math.sin(Math.PI*u)*H*.16;}
+    else if(t<stop){const u=out((t-b2)/(stop-b2));x=W*(xs[2]+(xs[3]-xs[2])*u);y=fl-r;}
+    else{x=W*xs[3];y=fl-r;}
+    for(const bt of[b1,b2]){if(t>bt&&t<bt+.18){const u=(t-bt)/.18,bx=W*(bt===b1?xs[1]:xs[2]);
+      ctx.strokeStyle=`rgba(242,244,238,${.7*(1-u)})`;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(bx,fl,r*(1+u*2.2),r*.35*(1+u*1.4),0,0,Math.PI*2);ctx.stroke();}}
+    const hgt=Math.max(0,fl-r-y)/(H*.42);
+    ctx.fillStyle=`rgba(0,0,0,${.3-hgt*.2})`;ctx.beginPath();ctx.ellipse(x,fl+2,r*(1-hgt*.4),r*.25,0,0,Math.PI*2);ctx.fill();
+    ball(x,y,r,x/r*.9);
+  }
+
+  const SCENES=[[1100,t=>side(t,false)],[850,t=>top(t,false)],[650,close],[520,t=>swipe(t,false)],
+                [420,t=>side(t,true)],[340,t=>top(t,true)],[300,close],[270,t=>swipe(t,true)],[2600,last],[500,()=>{}]];
+  let raf=0,timers=[];
+  function play(){
+    stage.className='stage';
+    const t0=performance.now();
+    function frame(now){
+      let el=now-t0,i=0;
+      while(i<SCENES.length&&el>SCENES[i][0]){el-=SCENES[i][0];i++;}
+      if(i>=SCENES.length){toPhoto();return;}
+      const[d,fn]=SCENES[i];ctx.save();fn(Math.min(1,el/d));ctx.restore();
+      if(i>0&&i<8&&el<90){ctx.fillStyle=`rgba(242,244,238,${.35*(1-el/90)})`;ctx.fillRect(0,0,W,H);}
+      raf=requestAnimationFrame(frame);
+    }
+    raf=requestAnimationFrame(frame);
+  }
+  const at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  function toPhoto(){
+    stage.classList.add('s-photo');
+    at(1700,()=>stage.classList.add('s-word'));
+    at(3500,()=>stage.classList.add('s-flood'));
+    at(4500,()=>{stage.classList.add('s-done');showDeck();});
+  }
+
+  // ── 슬라이드: 원고 순서 ──
+  const SL=[
+    {t:'공간',s:'xl',bg:C.ball,fg:C.ink},
+    {t:'2시간',s:'l',bg:C.court,fg:C.line},
+    {t:'셔틀콕',s:'l',bg:C.line,fg:C.ink},
+    {t:'키친',s:'xl',bg:C.green,fg:C.line},
+    {t:'피트\n샘프라스',s:'ml',bg:C.ink,fg:C.ball},
+    {t:'20%',s:'xl',bg:C.ball,fg:C.ink,link:['공튀기기 6단계 보기','#d-ball']},
+    {t:'1500',s:'l',bg:C.court,fg:C.line},
+    {t:'1분',s:'xl',bg:C.ink,fg:C.line,link:['2024 경기평가 체크리스트','#d-check']},
+    {t:'',vid:true,s:'xl',bg:C.ink,fg:C.line},
+    {t:'3.0',s:'xl',bg:C.line,fg:C.court,link:['평가계획서 보기','#d-plan']},
+    {t:'',s:'xl',bg:C.green,fg:C.line,link:['학생 답안 보기','#d-answers']},
+    {t:'수업을 어떻게\n하면 잘합니까',s:'m',bg:C.court,fg:C.line},
+    {t:'공간',s:'xl',bg:C.ball,fg:C.ink},
+  ];
+  const deck=document.getElementById('deck'),dbg=document.getElementById('dbg'),grow=document.getElementById('dgrow'),
+        dword=document.getElementById('dword'),dcount=document.getElementById('dcount'),dlink=document.getElementById('dlink'),dhint=document.getElementById('dhint');
+  let cur=0,busy=false;
+  function render(i){
+    const s=SL[i];cur=i;deck.style.color=s.fg;
+    dcount.textContent=`${i+1} / ${SL.length}`;
+    if(s.link){dlink.textContent=s.link[0]+' ↓';dlink.href=s.link[1];dlink.hidden=false;}else dlink.hidden=true;
+    dword.className='d-word '+s.s;dword.textContent=s.t;deck.classList.toggle('solo',!s.t&&!!s.link);
+    const v=document.getElementById('dvid');
+    if(s.vid){v.classList.add('on');try{v.currentTime=0;}catch(_){ } const pr=v.play();pr&&pr.catch(()=>{});}
+    else{v.classList.remove('on');v.pause();}
+  }
+  function showDeck(){dbg.style.background=SL[0].bg;render(0);dhint.classList.remove('gone');deck.hidden=false;requestAnimationFrame(()=>deck.classList.add('on'));}
+  function go(n,x,y){
+    if(n<0||n>=SL.length||busy||n===cur)return;
+    dhint.classList.add('gone');
+    const s=SL[n];
+    if(still()){dbg.style.background=s.bg;render(n);return;}
+    busy=true;dword.classList.add('out');
+    grow.style.transition='none';grow.style.background=s.bg;grow.style.transform='scale(0)';
+    grow.style.left=(x??W/2)+'px';grow.style.top=(y??H/2)+'px';
+    void grow.offsetWidth;
+    const cover=Math.hypot(Math.max(x??W/2,W-(x??W/2)),Math.max(y??H/2,H-(y??H/2)))/20*1.05;
+    grow.style.transition='transform .6s cubic-bezier(.7,0,.25,1)';grow.style.transform=`scale(${cover.toFixed(1)})`;
+    at(280,()=>{render(n);dword.classList.add('out');requestAnimationFrame(()=>requestAnimationFrame(()=>dword.classList.remove('out')));});
+    at(640,()=>{dbg.style.background=s.bg;grow.style.transition='none';grow.style.transform='scale(0)';busy=false;});
+  }
+  let px=0,py=0;
+  deck.addEventListener('pointerdown',e=>{px=e.clientX;py=e.clientY;});
+  deck.addEventListener('pointerup',e=>{
+    if(e.target.closest('a,button'))return;
+    const r=stage.getBoundingClientRect(),dx=e.clientX-px,dy=e.clientY-py;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3){dx<0?go(cur+1):go(cur-1);return;}
+    if(Math.abs(dx)<12&&Math.abs(dy)<12){const x=e.clientX-r.left,y=e.clientY-r.top;x<W*.28?go(cur-1):go(cur+1,x,y);}
+  });
+  addEventListener('keydown',e=>{
+    if(deck.hidden||!document.getElementById('viewer').hidden)return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+  });
+  function reset(){cancelAnimationFrame(raf);timers.forEach(clearTimeout);timers=[];}
+  const still=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  startBtn.addEventListener('click',()=>{
+    startBtn.hidden=true;reset();
+    if(still()){stage.className='stage s-photo s-word s-flood s-done';showDeck();return;}
+    play();
+  });
+  document.getElementById('replay').addEventListener('click',()=>{
+    reset();busy=false;deck.classList.remove('on');deck.hidden=true;ctx.clearRect(0,0,W,H);
+    if(still()){showDeck();return;} play();
+  });
+
+  // 연도 탭
+  document.querySelectorAll('.group[data-group]').forEach(g=>{
+    const sheet=g.querySelector('.sheet'),name=g.querySelector('h3').textContent;
+    g.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+      g.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
+      sheet.querySelector('.lbl').textContent=`${b.dataset.y} ${name} 캡처 자리`;
+      sheet.dataset.title=`${b.dataset.y} ${name}`;
+    }));
+  });
+
+  // 문항 연도 탭
+  document.querySelectorAll('.group[data-panels]').forEach(g=>{
+    const bs=g.querySelectorAll('.tabs button');
+    bs.forEach(b=>b.addEventListener('click',()=>{
+      bs.forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on?'true':'false');document.getElementById(x.dataset.p).hidden=!on;});
+    }));
+  });
+
+  // 답안 링크는 2026 탭을 열고 이동
+  document.getElementById('dlink').addEventListener('click',e=>{
+    if(e.currentTarget.getAttribute('href')!=='#d-answers')return;
+    const t=document.querySelector('[data-p="q26"]'); if(t&&t.getAttribute('aria-selected')!=='true') t.click();
+  });
+
+  // 크게 보기
+  const viewer=document.getElementById('viewer'),pane=document.getElementById('vpane'),vt=document.getElementById('vtitle');
+  let back=null;
+  document.querySelectorAll('.docs .sheet').forEach(s=>s.addEventListener('click',()=>{
+    back=s;vt.textContent=s.dataset.title||'';pane.innerHTML='';const c=s.cloneNode(true);c.tabIndex=-1;pane.appendChild(c);
+    viewer.hidden=false;document.body.style.overflow='hidden';document.getElementById('vclose').focus();
+  }));
+  function shut(){viewer.hidden=true;document.body.style.overflow='';back&&back.focus();}
+  document.getElementById('vclose').addEventListener('click',shut);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!viewer.hidden)shut();});
+})();
+</script>
