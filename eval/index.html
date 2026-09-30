@@ -1,0 +1,559 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>피클볼 평가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800;900&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ink:#0B0C0A;
+  --ink-2:#151613;
+  --surface:#12171A;
+  --line:#2C2D28;
+  --mute:#AAA99F;
+  --paper:#F1EFE8;
+  --ball:#F4D23C;
+  --ball-dim:#6E6124;
+  --court:#7FA7C4;
+  --display:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{word-break:keep-all;overflow-wrap:anywhere;background:var(--ink);color:var(--paper);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ---------- stage ---------- */
+.stage{position:relative;height:clamp(560px,94svh,980px);background:var(--ink);overflow:hidden;user-select:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#world{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,var(--ink) 0%,var(--ink) 38%,rgba(11,12,10,0) 48%)}
+@media (min-aspect-ratio:1/1){.scrim{background:linear-gradient(to right,var(--ink) 0%,var(--ink) 34%,rgba(11,12,10,0) 46%)}}
+
+.hud{position:absolute;inset:0 0 auto 0;z-index:5;padding:14px 16px 0;pointer-events:none}
+.bars{display:flex;gap:3px}
+.seg{height:3px;background:rgba(241,239,232,.16);border-radius:2px;overflow:hidden}
+.seg i{display:block;height:100%;width:0;background:var(--ball)}
+.seg.ib i{background:var(--court)}
+
+.controls{position:absolute;right:12px;bottom:12px;z-index:6;display:flex;gap:6px;opacity:.55;transition:opacity .3s}
+.stage:hover .controls,.controls:focus-within{opacity:1}
+.controls button{font:600 13px/1 var(--mono);color:var(--paper);background:rgba(11,12,10,.7);border:1px solid var(--line);border-radius:999px;padding:9px 13px;cursor:pointer}
+.controls button:focus-visible{outline:2px solid var(--ball);outline-offset:2px}
+
+/* ---------- captions ---------- */
+.cap{position:absolute;z-index:4;left:20px;right:20px;top:var(--ct,58%);bottom:58px;display:flex;flex-direction:column;justify-content:flex-start;gap:clamp(8px,1.6vh,16px);visibility:hidden;opacity:0;transition:opacity .18s ease,visibility 0s linear .18s;pointer-events:none}
+@media (min-aspect-ratio:1/1){.cap{left:clamp(24px,5vw,72px);right:auto;width:calc(40% - clamp(24px,5vw,72px));top:64px;bottom:64px;justify-content:center}}
+.cap.on{visibility:visible;opacity:1;transition:opacity .25s ease}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ball)}
+.stage[data-part="ib"] .eyebrow{color:var(--court)}
+.big{font-family:var(--display);font-weight:900;line-height:1;letter-spacing:-.025em;font-size:clamp(48px,7.5vw,110px);margin:0}
+.mid{font-family:var(--display);font-weight:800;line-height:1.18;letter-spacing:-.01em;font-size:clamp(24px,3.6vw,46px);text-wrap:balance;margin:0}
+.small{font-size:clamp(15.5px,1.5vw,18px);color:var(--mute);margin:0;max-width:34em;line-height:1.55}
+.hl{color:var(--ball)}
+.hl-c{color:var(--court)}
+
+.cap .r{display:block}
+.cap.on .r{animation:reveal .55s cubic-bezier(.2,.75,.15,1) both;animation-delay:calc(var(--d,0) * 1s)}
+@keyframes reveal{from{opacity:0;transform:translateY(18px);clip-path:inset(-40% -20% 100% -20%)}to{opacity:1;transform:none;clip-path:inset(-40% -20% -40% -20%)}}
+
+.stds{display:grid;gap:16px}
+.std{display:grid;gap:2px}
+.std .code{font:600 14px var(--mono);color:var(--ball)}
+.std p{margin:0;font-size:clamp(19px,1.9vw,24px);line-height:1.42;font-weight:500}
+.std em{font-style:normal;color:var(--ball)}
+
+.num{font-family:var(--display);font-weight:900;font-size:clamp(88px,14vw,190px);line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin:0}
+.num small{font-size:.24em;letter-spacing:0;margin-left:.2em;color:var(--mute);font-weight:800}
+
+.strikes{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline}
+.strike{position:relative;font-family:var(--display);font-weight:900;font-size:clamp(36px,6vw,78px);line-height:1.05}
+.strike::after{content:"";position:absolute;left:-4%;right:-4%;top:52%;height:.09em;background:var(--ball);transform:scaleX(0);transform-origin:left}
+.cap.on .strike::after{animation:strk .45s cubic-bezier(.6,0,.3,1) forwards;animation-delay:calc(var(--d) * 1s)}
+.cap.on .strike{animation:fadeaway .5s forwards;animation-delay:calc(var(--d) * 1s + .55s)}
+@keyframes strk{to{transform:scaleX(1)}}
+@keyframes fadeaway{to{color:#3a3b36}}
+
+.steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-weight:700;font-size:clamp(15px,1.8vw,20px)}
+.steps .st{padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);color:var(--mute);transition:all .3s}
+.steps .st.lit{border-color:var(--ball);color:var(--ink);background:var(--ball)}
+.steps i{font-style:normal;color:var(--mute)}
+
+.qrows{display:grid;gap:6px}
+.qrow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;font-size:clamp(15px,1.5vw,18px);line-height:1.4;opacity:.18;transition:opacity .4s}
+.qrow.lit{opacity:1}
+.qrow b{font:900 18px/1 var(--display);color:var(--court)}
+.qrow span em{font-style:normal;font-weight:700}
+
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.loop .lp{font:700 clamp(15px,2vw,22px)/1.2 var(--body);padding:10px 16px;border:1.5px solid var(--court);border-radius:999px}
+.loop .lp.hl{background:var(--ball);border-color:var(--ball);color:var(--ink)}
+.loop i{font-style:normal;color:var(--mute);font-size:20px}
+.last{font-family:var(--display);font-weight:900;font-size:clamp(76px,13vw,170px);line-height:1;letter-spacing:-.03em;margin:0}
+
+/* ---------- world (svg) ---------- */
+#world .ln{fill:none;stroke:var(--paper);stroke-opacity:.72;stroke-width:1.5;vector-effect:non-scaling-stroke}
+#world .net{stroke:var(--paper);stroke-width:3;vector-effect:non-scaling-stroke}
+#world .surface{fill:var(--surface)}
+#world .kz{fill:var(--ball);fill-opacity:.07}
+#court{transition:opacity 1.6s}
+#court.dim{opacity:.35}
+.ov{opacity:0;transition:opacity .5s}
+.ov.on{opacity:1}
+#world text{font-family:var(--display)}
+.paintlbl{font-weight:800;font-size:17px;fill:var(--paper)}
+.band rect{transition:fill-opacity .5s,opacity .5s}
+#bands .band{opacity:0;transition:opacity .45s;transition-delay:calc(var(--k) * .35s)}
+#bands.on .band{opacity:1}
+#bands.focus10 .band{opacity:.18;transition-delay:0s}
+#bands.focus10 .band.b10{opacity:1}
+#ticks .cell{opacity:0;transition:opacity .25s;transition-delay:calc(.2s + var(--k) * 60ms)}
+#ticks.on .cell{opacity:1}
+#ticks .blk{opacity:0;transition:opacity .4s;transition-delay:1.4s}
+#ticks.on .blk{opacity:1}
+#grid rect{fill:none;stroke:var(--paper);stroke-opacity:.5;stroke-width:1;vector-effect:non-scaling-stroke;opacity:0;transition:opacity .06s linear;transition-delay:calc(var(--i) * 3.2ms)}
+#grid rect.m{fill:var(--ball);fill-opacity:.85;stroke:none}
+#grid.fill rect{opacity:1}
+#check1 path{fill:none;stroke:var(--ball);stroke-width:.4;stroke-linecap:round;stroke-linejoin:round}
+#paint26 text{font-weight:900;font-size:25px;fill:var(--ball)}
+#abcd .bx{fill:var(--court);fill-opacity:0;transition:fill-opacity .5s}
+#abcd .lt{font-weight:900;font-size:64px;fill:var(--court);opacity:.14;transition:opacity .5s}
+#abcd .k.lit .bx{fill-opacity:.2}
+#abcd .k.lit .lt{opacity:1}
+#loopD path{fill:none;stroke:var(--ball);stroke-width:1.2;stroke-linecap:round}
+#q12 .q12e{font-family:var(--mono)!important;font-weight:600;font-size:6.5px;letter-spacing:.12em;fill:var(--ball)}
+#q12 .q12a{font-weight:800;font-size:17px;fill:var(--paper)}
+#q12 .q12b{font-weight:900;font-size:17px;fill:var(--ball)}
+.scrim{transition:opacity .6s}
+.stage.noscrim .scrim{opacity:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fxt{font-family:var(--mono)!important;font-weight:600;font-size:12px;fill:var(--ball)}
+.fxt.w{fill:var(--paper)}
+
+/* ---------- reading section ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:8px 64px}
+.paper{margin:0;max-width:100%}
+.paper img{display:block;max-width:100%;height:auto;border-radius:6px}
+/* ---------- reading section ---------- */
+.read{max-width:760px;margin:56px auto 0;display:flex;flex-direction:column;gap:40px}
+.read header h1{font-family:var(--display);font-weight:900;font-size:clamp(28px,4vw,40px);line-height:1.15;margin:0 0 10px;text-wrap:balance}
+.read header p{margin:0;color:var(--mute)}
+.read h2{font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 14px;display:flex;align-items:baseline;gap:10px;text-wrap:balance}
+.read h2 .tag{font:600 11px var(--mono);letter-spacing:.08em;padding:4px 8px;border-radius:4px;background:var(--ball);color:var(--ink)}
+.read h2 .tag.ib{background:var(--court)}
+.read p{margin:0 0 10px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px var(--mono);letter-spacing:.06em;color:var(--mute);text-transform:uppercase;background:var(--ink-2)}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td .dim{color:var(--mute)}
+.read ul{margin:0;padding-left:1.1em;display:grid;gap:8px}
+.note{font-size:13px;color:var(--mute);border-top:1px solid var(--line);padding-top:14px}
+
+
+
+@media (prefers-reduced-motion: reduce){
+  .cap,.cap.on{transition:none}
+  .cap.on .r,.cap.on .strike,.cap.on .strike::after{animation:none!important}
+  .cap.on .strike{color:#3a3b36}
+  .cap.on .strike::after{transform:none}
+}
+</style>
+
+<div class="stage" id="stage" data-part="2022" role="region" aria-label="모션그래픽: 피클볼 평가">
+  <svg id="world" viewBox="-24 -24 248 488" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs><clipPath id="courtClip"><rect id="ccr" x="-40" y="-40" width="280" height="520"/></clipPath></defs>
+    <g id="court" clip-path="url(#courtClip)">
+      <rect class="surface" x="0" y="0" width="200" height="440"/>
+      <rect class="kz" x="0" y="150" width="200" height="140"/>
+      <rect class="ln" x="0" y="0" width="200" height="440"/>
+      <line class="ln" x1="0" y1="150" x2="200" y2="150"/>
+      <line class="ln" x1="0" y1="290" x2="200" y2="290"/>
+      <line class="ln" x1="100" y1="0" x2="100" y2="150"/>
+      <line class="ln" x1="100" y1="290" x2="100" y2="440"/>
+      <line class="net" x1="-10" y1="220" x2="210" y2="220"/>
+    </g>
+    <rect id="serveBox" class="ov" x="0" y="0" width="100" height="150" fill="#F4D23C" fill-opacity=".16"/>
+    <g id="bands" class="ov">
+      <g class="band b20" style="--k:0"><rect x="0" y="352" width="200" height="88" fill="#F4D23C" fill-opacity=".5"/><text class="paintlbl" x="100" y="402" text-anchor="middle" style="fill:#0B0C0A">서브 20</text></g>
+      <g class="band b30" style="--k:1"><rect x="0" y="220" width="200" height="132" fill="#F4D23C" fill-opacity=".34"/><text class="paintlbl" x="100" y="292" text-anchor="middle">리턴 앤 발리 30</text></g>
+      <g class="band b40" style="--k:2"><rect x="0" y="44" width="200" height="176" fill="#F4D23C" fill-opacity=".2"/><text class="paintlbl" x="100" y="138" text-anchor="middle">경기 40</text></g>
+      <g class="band b10" style="--k:3"><rect x="1" y="1" width="198" height="42" fill="none" stroke="#F1EFE8" stroke-width="1.5" vector-effect="non-scaling-stroke"/><text class="paintlbl" x="100" y="28" text-anchor="middle">서술형 10</text></g>
+    </g>
+    <g id="ticks" class="ov"></g>
+    <g id="grid" class="ov"></g>
+    <g id="check1" class="ov"><path id="chk" d="M73 341.5 L76 344.5 L80 338.5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></g>
+    <g id="paint26" class="ov"><text x="100" y="112" text-anchor="middle">경기가 되는가</text></g>
+    <g id="abcd" class="ov">
+      <g class="k" data-k="0"><rect class="bx" x="0" y="0" width="100" height="150"/><text class="lt" x="50" y="97" text-anchor="middle">A</text></g>
+      <g class="k" data-k="1"><rect class="bx" x="100" y="0" width="100" height="150"/><text class="lt" x="150" y="97" text-anchor="middle">B</text></g>
+      <g class="k" data-k="2"><rect class="bx" x="0" y="290" width="100" height="150"/><text class="lt" x="50" y="387" text-anchor="middle">C</text></g>
+      <g class="k" data-k="3"><rect class="bx" x="100" y="290" width="100" height="150"/><text class="lt" x="150" y="387" text-anchor="middle">D</text></g>
+    </g>
+    <g id="loopD" class="ov"><path id="loopPath" d="M150 327 A38 38 0 1 1 113 372 M113 372 l-6 -9 M113 372 l9 -5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></g>
+    <g id="q12" class="ov">
+      <text class="q12e" x="100" y="168" text-anchor="middle">경기 단원의 질문</text>
+      <text class="q12a" x="100" y="204" text-anchor="middle">나는 공을 넘기는가,</text>
+      <text class="q12b" x="100" y="253" text-anchor="middle">경기를 만들어 가는가?</text>
+    </g>
+    <g id="fx"></g>
+  </svg>
+  <div class="scrim"></div>
+
+  <div class="hud"><div class="bars" id="bars"></div></div>
+
+  <!-- 1 -->
+  <div class="cap" data-part="2022" data-dur="6">
+    <div class="eyebrow r">2026 피클볼 수업</div>
+    <p class="big r" style="--d:.15;font-size:clamp(38px,4vw,64px);line-height:1.1">평가 계획과 방법</p>
+    <p class="mid r hl" style="--d:.45;font-size:clamp(20px,2.4vw,34px)">2022 개정 교육과정</p>
+  </div>
+  <!-- 2 -->
+  <div class="cap" data-part="2022" data-dur="12">
+    <div class="eyebrow r">성취기준 · 네트형 스포츠</div>
+    <div class="stds">
+      <div class="std r" style="--d:.2"><span class="code">[9체02-16]</span><p>네트형 스포츠의 역사와 특성을 <em>탐색하고 비교한다.</em></p></div>
+      <div class="std r" style="--d:2.4"><span class="code">[9체02-17]</span><p>네트형 스포츠의 수행 원리를 <em>적용하여</em> 경기 기능을 <em>수행하고 향상한다.</em></p></div>
+      <div class="std r" style="--d:4.8"><span class="code">[9체02-18]</span><p>네트형 스포츠의 경기 방법을 <em>이해하고</em> 경기 전략을 <em>활용하며</em> 안전하게 경기한다.</p></div>
+    </div>
+  </div>
+  <!-- 3 -->
+  <div class="cap" data-part="2022" data-dur="7">
+    <div class="eyebrow r">수행평가 배점</div>
+    <p class="mid r" style="--d:.2">100점을<br>코트 위에</p>
+  </div>
+  <!-- 4 -->
+  <div class="cap" data-part="2022" data-dur="8">
+    <div class="eyebrow r">17차시 흐름</div>
+    <p class="mid r" style="--d:.2">배운 곳에서<br>평가한다</p>
+  </div>
+  <!-- 5 -->
+  <div class="cap" data-part="2022" data-dur="6">
+    <div class="eyebrow r">수행평가 1 · 서브 20점</div>
+    <p class="mid r" style="--d:.2">대각선으로,<br>언더핸드로</p>
+  </div>
+  <!-- 6 -->
+  <div class="cap" data-part="2022" data-dur="9">
+    <div class="eyebrow r">수행평가 2 · 리턴 앤 발리 30점</div>
+    <p class="mid r" style="--d:.2">두 번 튀고 나서<br>네트로</p>
+    <p class="small r" style="--d:.8">피클볼에서 리턴을 길게 치는 것은 왜 단순한 기술이 아니라 전략적 선택인가?</p>
+  </div>
+  <!-- 7 -->
+  <div class="cap" data-part="2022" data-dur="6">
+    <div class="eyebrow r">2024 경기평가 체크리스트</div>
+    <p class="num r" style="--d:.1"><span id="n372">0</span><small>번 판정</small></p>
+    <p class="small r" style="--d:.5">12항목 × 31명</p>
+  </div>
+  <!-- 8 -->
+  <div class="cap" data-part="2022" data-dur="5">
+    <div class="eyebrow r">2024 경기평가 체크리스트</div>
+    <p class="big r" style="--d:.1">7초</p>
+    <p class="mid r" style="--d:.4">에 한 번씩</p>
+    <p class="small r" style="--d:.8">45분 수업이면 7초에 한 번씩 판정해야 했습니다.</p>
+  </div>
+  <!-- 9 -->
+  <div class="cap" data-part="2022" data-dur="7">
+    <div class="eyebrow r">2026 경기평가 · 40점</div>
+    <div class="strikes"><span class="strike" style="--d:.5">백핸드</span><span class="strike" style="--d:1">딩크샷</span></div>
+    <p class="mid r" style="--d:2">기술 이름을 지우고<br>하나만 본다</p>
+  </div>
+  <!-- 10 -->
+  <div class="cap" data-part="2022" data-dur="10">
+    <div class="eyebrow r">경기평가 · 이렇게 평가했습니다</div>
+    <p class="mid r" style="--d:.2">경기가 되면 <span class="hl">만점</span></p>
+    <p class="small r" style="--d:.5">누구와도 경기를 즐길 수 있는 선, DUPR 2.5~3 정도.</p>
+    <p class="small r" style="--d:1.1;color:var(--paper)">경기가 어려운 친구와 같은 조가 되면,<br>그 조는 교사가 직접 상대가 되어</p>
+    <div class="steps r" style="--d:1.4"><span class="st" data-s="0">서브</span><i>→</i><span class="st" data-s="1">딩크</span><i>→</i><span class="st" data-s="2">베이스라인 랠리</span></div>
+  </div>
+  <!-- 11 -->
+  <div class="cap" data-part="2022" data-dur="5">
+    <div class="eyebrow r">수행평가 4 · 서술형 10점 · 17차시</div>
+    <p class="mid r" style="--d:.2">코트에서 한 것을<br>자기 말로 설명한다</p>
+  </div>
+  <!-- 12 -->
+  <div class="cap" data-part="2022" data-dur="6">
+    <p class="sr">경기 단원의 질문. 나는 공을 넘기는가, 경기를 만들어 가는가?</p>
+  </div>
+  <!-- 13 -->
+  <div class="cap" data-part="2022" data-dur="9">
+    <div class="eyebrow r">성취기준 [9체02-17]</div>
+    <p class="small r" style="--d:.2;color:var(--paper);font-size:clamp(15px,1.8vw,20px)">네트형 스포츠의 수행 원리를 적용하여 경기 기능을 수행하고 <b class="hl">향상한다.</b></p>
+    <p class="mid r" style="--d:1.6"><span class="hl">향상한다</span>를 평가할 방법은<br>찾지 못했습니다.</p>
+    <p class="mid r" style="--d:4;color:var(--mute)">그래서, 해 보고 싶어졌습니다.</p>
+  </div>
+  <!-- 14 -->
+  <div class="cap" data-part="ib" data-dur="12">
+    <div class="eyebrow r">질문 하나</div>
+    <p class="mid r" style="--d:.2;font-size:clamp(22px,3vw,38px)">피클볼 경기를 <span class="hl-c">IB</span>에서도<br>할 수 있지 않을까요?</p>
+    <div class="qrows">
+      <div class="qrow" data-q="0"><b>A</b><span><em>지식과 이해.</em> 서술형으로 규칙과 전술을 설명해 볼 수 있지 않을까?</span></div>
+      <div class="qrow" data-q="1"><b>B</b><span><em>수행 계획.</em> 무언가를 직접 만들어 보면서 규칙을 이해할 수 있지 않을까?</span></div>
+      <div class="qrow" data-q="2"><b>C</b><span><em>적용과 수행.</em> 서브, 리턴 앤 발리, 경기. 이미 평가하고 있는 것들</span></div>
+      <div class="qrow" data-q="3"><b>D</b><span><em>성찰과 개선.</em> 경기가 끝난 뒤 전술·전략 카드로 돌아보고 고쳐 볼 수 있지 않을까?</span></div>
+    </div>
+  </div>
+  <!-- 15 -->
+  <div class="cap" data-part="ib" data-dur="6">
+    <div class="eyebrow r">D · 성찰과 개선</div>
+    <p class="mid r" style="--d:.2">경기가 끝나고,<br>카드 한 장</p>
+    <div class="loop r" style="--d:.7"><span class="lp">경기</span><i>→</i><span class="lp hl">전술·전략 카드</span><i>→</i><span class="lp">다시 경기</span></div>
+  </div>
+  <!-- 16 -->
+  <div class="cap" data-part="ib" data-dur="5">
+    <div class="eyebrow r">함께 고민해 보고 싶은 것</div>
+    <p class="last r" style="--d:1">공간</p>
+  </div>
+
+  <div class="controls">
+    <button type="button" id="bPrev" aria-label="이전 장면">◀</button>
+    <button type="button" id="bPlay" aria-label="일시정지">일시정지</button>
+    <button type="button" id="bNext" aria-label="다음 장면">▶</button>
+  </div>
+</div>
+
+<div class="wrap">
+<article class="read">
+  <header>
+    <h1>피클볼 평가</h1>
+    <p>위 모션그래픽의 내용을 읽기용으로 정리했습니다. 2026학년도 1학기 피클볼 평가 계획을 바탕으로 했고, 뒷부분은 답이 아니라 함께 고민해 보고 싶은 질문입니다.</p>
+  </header>
+
+  <section>
+    <h2><span class="tag">2022</span>평가 계획 한눈에</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>평가 요소</th><th>배점</th><th>차시</th><th>무엇을 보는가</th></tr></thead>
+      <tbody>
+        <tr><td>서브</td><td class="n">20</td><td class="n">8</td><td>이븐·오드 코트의 서비스 코트로 언더핸드 서브를 정확하게 보내는가</td></tr>
+        <tr><td>리턴 앤 발리</td><td class="n">30</td><td class="n">13</td><td>투바운스 규칙을 이해하고 길게 리턴한 뒤 네트로 붙는가</td></tr>
+        <tr><td>경기</td><td class="n">40</td><td class="n">14–16</td><td>경기가 되는가 <span class="dim">(경기가 어려운 친구와 같은 조는 교사와 랠리로 평가)</span></td></tr>
+        <tr><td>서술형</td><td class="n">10</td><td class="n">17</td><td>규칙과 전술을 자기 말로 설명하는가</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="tag">2022</span>2024에서 2026으로</h2>
+    <p>2024년 경기평가는 기술 체크리스트였습니다. 한 학생당 12항목을 상·중·하로 판정했고, 한 반 31명이면 372번, 45분 수업이면 7초에 한 번씩 판정해야 했습니다.</p>
+    <figure class="paper" style="margin:14px 0"><img src="check2024.jpg" alt="2024 피클볼 경기평가 체크리스트 원본"></figure>
+    <p>2026년에는 경기 만점 기준에서 백핸드, 딩크샷 같은 기술 이름을 지우고, 경기가 되는가를 봅니다. 경기가 되면 만점입니다. DUPR 2.5~3 정도면 누구와도 경기를 즐길 수 있다고 보았습니다. 경기가 어려운 친구와 같은 조가 되면, 그 조는 모두 교사가 직접 상대가 되어 서브, 딩크, 베이스라인 랠리로 평가했습니다.</p>
+  </section>
+
+  <section>
+    <h2><span class="tag">2022</span>향상한다</h2>
+    <p>[9체02-17]은 “네트형 스포츠의 수행 원리를 적용하여 경기 기능을 수행하고 향상한다.”입니다. 이 가운데 ‘향상한다’를 평가할 방법은 찾지 못했습니다. 그래서 해 보고 싶어졌습니다.</p>
+  </section>
+
+  <section>
+    <h2><span class="tag ib">IB</span>피클볼 경기를 IB에서도 할 수 있지 않을까요?</h2>
+    <p>IB MYP 체육은 네 가지 기준으로 평가한다고 합니다. 피클볼 수업에 대 보면 이런 질문이 생깁니다.</p>
+    <ul>
+      <li><b>A 지식과 이해.</b> 서술형으로 규칙과 전술을 설명해 볼 수 있지 않을까?</li>
+      <li><b>B 수행 계획.</b> 무언가를 직접 만들어 보면서 규칙을 이해할 수 있지 않을까?</li>
+      <li><b>C 적용과 수행.</b> 서브, 리턴 앤 발리, 경기. 이미 평가하고 있는 것들입니다.</li>
+      <li><b>D 성찰과 개선.</b> 경기가 끝난 뒤 전술·전략 카드로 무엇이 됐고 무엇을 바꿔 볼지 적고, 다음 경기에서 확인해 볼 수 있지 않을까?</li>
+    </ul>
+  </section>
+
+  <p class="note">2022 개정 교육과정 중학교 체육과 성취기준 [9체02-16]~[9체02-18]과 2026학년도 1학기 피클볼 평가 계획(서브 20 · 리턴 앤 발리 30 · 경기 40 · 서술형 10)을 바탕으로 했습니다. A–D는 IB MYP 체육과 건강교육의 네 가지 평가 기준 이름입니다.</p>
+</article>
+</div>
+
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const stage=document.getElementById('stage'),svg=document.getElementById('world');
+  const caps=[...stage.querySelectorAll('.cap')];
+  const durs=caps.map(c=>parseFloat(c.dataset.dur)*1000);
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $=id=>document.getElementById(id);
+  const fx=$('fx'),court=$('court'),bPlay=$('bPlay');
+  const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||fx).appendChild(e);return e;};
+
+  /* ---------- progress ---------- */
+  const fills=caps.map((c,i)=>{const s=document.createElement('div');s.className='seg'+(c.dataset.part==='ib'?' ib':'');s.style.flex=durs[i];const f=document.createElement('i');s.appendChild(f);$('bars').appendChild(s);return f;});
+
+  /* ---------- static world pieces ---------- */
+  // 17 lessons along the right sideline
+  const ticks=$('ticks'),pitch=440/17;
+  for(let n=1;n<=17;n++){
+    const y=440-n*pitch+2,type=[8,13,17].includes(n)?'e':(n>=14&&n<=16?'g':'l');
+    const g=el('g',{class:'cell',style:'--k:'+n},ticks);
+    el('rect',{x:212,y:y,width:20,height:pitch-4,rx:2,fill:type==='e'?'#F4D23C':type==='g'?'#6E6124':'none',stroke:type==='l'?'#F1EFE8':'none','stroke-opacity':'.4','vector-effect':'non-scaling-stroke'},g);
+    const t=el('text',{x:222,y:y+pitch/2+2,'text-anchor':'middle','font-size':10,fill:type==='e'?'#0B0C0A':'#8C8B82','font-family':'IBM Plex Mono, monospace'},g);t.textContent=n;
+  }
+  [['친해지기',1,2,0],['서브',3,7,0],['평가',8,8,1],['리턴 앤 발리',9,12,0],['평가',13,13,1],['경기',14,16,0],['서술',17,17,1]].forEach(([name,a,b,ev])=>{
+    const y1=440-b*pitch+2,y2=440-(a-1)*pitch-2,g=el('g',{class:'blk'},ticks);
+    el('line',{x1:240,y1:y1,x2:240,y2:y2,stroke:ev?'#F4D23C':'#8C8B82','stroke-width':1.5,'vector-effect':'non-scaling-stroke'},g);
+    const t=el('text',{x:248,y:(y1+y2)/2+6,'font-size':17,'font-weight':700,fill:ev?'#F4D23C':'#F1EFE8'},g);t.textContent=name;
+  });
+  // 372 judgements: 12 items across, 31 students down
+  const grid=$('grid');
+  for(let i=0;i<372;i++){
+    const c=i%12,r=Math.floor(i/12);
+    el('rect',{x:10+c*15,y:12+r*13.5,width:11,height:9.5,rx:1.5,class:(((i*2654435761)>>>0)%100<22)?'m':'',style:'--i:'+i},grid);
+  }
+
+  /* ---------- camera ---------- */
+  let vb=[-24,-24,248,488],camAnim=null;
+  function frameFor(t,full,split){
+    const r=stage.getBoundingClientRect(),W=r.width,H=r.height,land=W/H>=1;
+    const reg=full?{x:16,y:36,w:W-32,h:H-80}:land?{x:W*.42,y:36,w:W*.58-20,h:H-72}:{x:0,y:30,w:W,h:H*(split||.58)-34};
+    const s=Math.min(reg.w/t[2],reg.h/t[3]);
+    const cx=t[0]+t[2]/2,cy=t[1]+t[3]/2;
+    return [cx-(reg.x+reg.w/2)/s, cy-(reg.y+reg.h/2)/s, W/s, H/s];
+  }
+  const setVB=v=>svg.setAttribute('viewBox',v.map(n=>n.toFixed(2)).join(' '));
+  function camTo(t,dur,full,split){
+    const to=frameFor(t,full,split),from=vb.slice();
+    if(camAnim)cancelAnimationFrame(camAnim);
+    if(reduced||!dur){vb=to;setVB(vb);return;}
+    const t0=performance.now();
+    const step=now=>{const k=Math.min(1,(now-t0)/dur),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+      vb=from.map((f,i)=>f+(to[i]-f)*e);setVB(vb);if(k<1)camAnim=requestAnimationFrame(step);};
+    camAnim=requestAnimationFrame(step);
+  }
+
+  /* ---------- helpers ---------- */
+  let token=0;
+  const wait=(ms,t)=>new Promise(r=>setTimeout(()=>r(t===token),ms));
+  function mkBall(){
+    const parts=[.18,.35,1].map((op,k)=>{const g=el('g',{opacity:op});if(k===2)el('ellipse',{rx:4.5,ry:2.4,fill:'#000',opacity:.5},g);el('circle',{r:k===2?5:4.5,fill:'#F4D23C',class:'bb'},g);return g;});
+    return parts;
+  }
+  function fly(ball,segs,delay){
+    const gk=[],ck=[];let t=0;const total=segs.reduce((a,x)=>a+x.d,0);
+    segs.forEach((sg,si)=>{const N=12;for(let k=(si?1:0);k<=N;k++){const u=k/N,x=sg.a[0]+(sg.b[0]-sg.a[0])*u,y=sg.a[1]+(sg.b[1]-sg.a[1])*u,arc=4*u*(1-u)*sg.h,off=(t+sg.d*u)/total;
+      gk.push({transform:'translate('+x+'px,'+y+'px)',offset:off});ck.push({transform:'translate(0px,'+(-15*arc)+'px) scale('+(1+.55*arc)+')',offset:off});}t+=sg.d;});
+    ball.forEach((g,k)=>{const lag=(2-k)*45,opt={duration:total,delay:delay+lag,fill:'both',easing:'linear'};g.animate(gk,opt);g.querySelector('.bb').animate(ck,opt);});
+    return total;
+  }
+  function mkP(x,y,color,label){const g=el('g',{transform:'translate('+x+' '+y+')'});el('circle',{r:7,fill:color},g);
+    if(label){const t=el('text',{x:11,y:4,class:'fxt w'},g);t.textContent=label;}g._p=[x,y];return g;}
+  function move(p,to,dur,delay){p.animate([{transform:'translate('+p._p[0]+'px,'+p._p[1]+'px)'},{transform:'translate('+to[0]+'px,'+to[1]+'px)'}],{duration:dur,delay,fill:'both',easing:'cubic-bezier(.3,.7,.3,1)'});p._p=to;}
+  function ring(x,y,delay){const c=el('circle',{cx:x,cy:y,r:9,fill:'none',stroke:'#F4D23C','stroke-width':1.6,'vector-effect':'non-scaling-stroke',opacity:0});
+    c.animate([{opacity:0,transform:'scale(.3)'},{opacity:1,transform:'scale(1)'},{opacity:.35,transform:'scale(1.25)'}],{duration:800,delay,fill:'both'});c.style.transformOrigin=x+'px '+y+'px';c.style.transformBox='view-box';}
+  function label(x,y,text,delay,cls){const t=el('text',{x,y,class:'fxt'+(cls?' '+cls:''),'text-anchor':'middle',opacity:0});t.textContent=text;t.animate([{opacity:0},{opacity:1}],{duration:300,delay,fill:'both'});}
+  const TEAM_A='#F1EFE8',TEAM_B='#7FA7C4';
+  let revA=null;
+  function reveal(){
+    const r=$('ccr');if(revA)cancelAnimationFrame(revA);
+    if(reduced){r.setAttribute('y',-40);r.setAttribute('height',520);return;}
+    const t0=performance.now(),D=1700;
+    const step=now=>{const k=Math.min(1,(now-t0)/D),e=1-Math.pow(1-k,3),h=520*e;
+      r.setAttribute('y',(480-h).toFixed(1));r.setAttribute('height',h.toFixed(1));if(k<1)revA=requestAnimationFrame(step);};
+    r.setAttribute('height',0);revA=requestAnimationFrame(step);
+  }
+
+  /* ---------- scenes ---------- */
+  const S=[
+    {cam:[-24,-24,248,488],from:[60,380,90,90],camDur:2600,vis:[],enter(t){
+      reveal();
+      const b=mkBall();fly(b,[{a:[16,470],b:[70,404],d:650,h:.9},{a:[70,404],b:[124,352],d:560,h:.55},{a:[124,352],b:[176,316],d:700,h:.1}],900);
+      ring(70,404,1550);ring(124,352,2110);}},
+    {cam:[-12,110,224,220],split:.34,vis:[]},
+    {cam:[-24,-16,248,472],vis:['bands']},
+    {cam:[134,-14,236,468],vis:['ticks']},
+    {cam:[-24,-40,248,520],vis:['serveBox'],enter(t){
+      mkP(50,454,TEAM_A);mkP(150,-14,TEAM_B);mkP(50,-14,TEAM_B);const b=mkBall();mkP(150,454,TEAM_A);
+      const run=()=>{fly(b,[{a:[150,446],b:[48,64],d:1300,h:1},{a:[48,64],b:[36,-6],d:320,h:.3}],0);ring(48,64,1300);};
+      run();wait(3000,t).then(ok=>ok&&run());}},
+    {cam:[-24,-40,248,520],vis:[],enter(t){
+      const s1=mkP(150,454,TEAM_A),s2=mkP(50,454,TEAM_A),r1=mkP(50,-14,TEAM_B),r2=mkP(150,-14,TEAM_B);const b=mkBall();
+      const T0=400;fly(b,[{a:[150,446],b:[48,64],d:1200,h:1},{a:[48,64],b:[50,-6],d:300,h:.3},{a:[50,-6],b:[142,392],d:1300,h:1.1},{a:[142,392],b:[150,446],d:300,h:.3},
+             {a:[150,446],b:[54,142],d:1100,h:.75},{a:[54,142],b:[118,334],d:650,h:.18},{a:[118,334],b:[124,384],d:260,h:.15}],T0);
+      ring(48,64,T0+1200);label(64,86,'1',T0+1200);
+      const hit=T0+1500;move(r1,[50,138],1250,hit);move(r2,[150,138],1250,hit+60);label(100,124,'키친 라인으로',hit+200,'w');
+      ring(142,392,hit+1300);label(158,410,'2',hit+1300);
+      // 세 번째 공을 키친 라인에서 튀기기 전에 발리
+      const vol=hit+1600+1100;ring(54,142,vol);label(30,160,'발리',vol);
+      ring(118,334,vol+650);}},
+    {cam:[-24,-16,248,472],vis:['grid'],enter(t){
+      $('grid').classList.remove('fill');void grid.getBBox();$('grid').classList.add('fill');
+      const n=$('n372');if(reduced){n.textContent='372';return;}const st=performance.now(),D=1300;
+      const step=now=>{if(t!==token)return;const k=Math.min(1,(now-st)/D);n.textContent=Math.round(372*k);if(k<1)requestAnimationFrame(step);};requestAnimationFrame(step);}},
+    {cam:[56,324,38,34],camDur:1300,vis:['grid','check1'],enter(t){
+      $('grid').classList.add('fill');const p=$('chk');
+      const go=()=>p.animate([{strokeDashoffset:1},{strokeDashoffset:0,offset:.35},{strokeDashoffset:0,offset:.8},{strokeDashoffset:1}],{duration:1400,iterations:3,delay:900});
+      if(!reduced)go();else p.style.strokeDashoffset=0;}},
+    {cam:[-24,-16,248,472],vis:['grid','paint26'],enter(t){
+      wait(250,t).then(ok=>ok&&$('grid').classList.remove('fill'));
+      $('paint26').classList.remove('on');wait(1800,t).then(ok=>ok&&$('paint26').classList.add('on'));}},
+    {cam:[-24,-40,248,520],vis:[],enter:async function(t){
+      const lit=k=>{stage.querySelectorAll('.cap.on .st').forEach((e,i)=>e.classList.toggle('lit',i===k));};
+      const T=mkP(50,-14,TEAM_B,'교사'),St=mkP(150,454,TEAM_A,'학생');const b=mkBall();
+      if(reduced){lit(2);return;}
+      fly(b,[{a:[150,446],b:[55,72],d:1200,h:1},{a:[55,72],b:[50,-6],d:300,h:.3},
+             {a:[50,-6],b:[95,262],d:1100,h:1},{a:[95,262],b:[100,298],d:250,h:.2},
+             {a:[100,298],b:[108,178],d:650,h:.45},{a:[108,178],b:[100,142],d:200,h:.15},
+             {a:[100,142],b:[92,262],d:650,h:.45},{a:[92,262],b:[100,298],d:200,h:.15},
+             {a:[100,298],b:[104,44],d:1200,h:1.2},{a:[104,44],b:[100,-6],d:250,h:.25},
+             {a:[100,-6],b:[96,396],d:1200,h:1.2},{a:[96,396],b:[100,446],d:250,h:.25}],600);
+      ring(55,72,1800);ring(95,262,3200);ring(108,178,4100);ring(92,262,4950);ring(104,44,6350);ring(96,396,7800);
+      move(St,[100,300],600,2100);move(T,[100,140],700,2100);
+      move(St,[100,448],700,5150);move(T,[100,-8],700,5150);
+      if(!await wait(600,t))return;lit(0);
+      if(!await wait(2850,t))return;lit(1);
+      if(!await wait(1700,t))return;lit(2);}},
+    {cam:[-14,-14,228,74],vis:['bands'],enter(){$('bands').classList.add('focus10');}},
+    {cam:[-12,150,224,124],full:true,vis:['q12'],enter(t){
+      const q=$('q12'),a=q.querySelector('.q12a'),b=q.querySelector('.q12b'),e=q.querySelector('.q12e');
+      if(reduced)return;
+      const fade=(x,d)=>x.animate([{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:500,delay:d,fill:'both',easing:'cubic-bezier(.2,.75,.15,1)'});
+      fade(e,200);fade(a,500);
+      const ball=mkBall();fly(ball,[{a:[150,176],b:[64,276],d:900,h:1},{a:[64,276],b:[50,284],d:260,h:.12}],1300);ring(64,276,2200);
+      fade(b,2100);}},
+    {cam:[-14,40,228,360],camDur:5200,vis:[]},
+    {cam:[-160,-100,520,640],camDur:1900,split:.4,vis:['abcd'],enter:async function(t){
+      const ks=[...$('abcd').querySelectorAll('.k')],rows=[...stage.querySelectorAll('.cap.on .qrow')];
+      ks.forEach(k=>k.classList.remove('lit'));
+      const lite=i=>{ks[i].classList.add('lit');rows[i]&&rows[i].classList.add('lit');};
+      if(reduced){[0,1,2,3].forEach(lite);return;}
+      if(!await wait(1500,t))return;lite(0);
+      for(let i=1;i<4;i++){if(!await wait(2200,t))return;lite(i);} }},
+    {cam:[94,284,112,166],vis:['abcd','loopD'],enter(t){
+      const ks=[...$('abcd').querySelectorAll('.k')];ks.forEach((k,i)=>k.classList.toggle('lit',i===3));
+      const p=$('loopPath');if(reduced){p.style.strokeDashoffset=0;return;}
+      p.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:1400,delay:700,fill:'both',easing:'cubic-bezier(.5,0,.2,1)'});}},
+    {cam:[-300,-200,800,840],camDur:3400,vis:[],enter(){court.classList.add('dim');}}
+  ];
+
+  /* ---------- player ---------- */
+  let cur=0,elapsed=0,playing=!reduced,last=performance.now();
+  const ovs=[...svg.querySelectorAll('.ov')];
+  function show(n){
+    token++;cur=Math.max(0,Math.min(caps.length-1,n));elapsed=0;
+    caps.forEach((c,i)=>{c.classList.remove('on');fills[i].style.width=i<cur?'100%':'0%';});
+    const c=caps[cur];void c.offsetWidth;c.classList.add('on');
+    c.querySelectorAll('.qrow,.st').forEach(e=>e.classList.remove('lit'));
+    stage.dataset.part=c.dataset.part;
+    fx.getAnimations&&fx.querySelectorAll('*').forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
+    fx.replaceChildren();
+    const sc=S[cur];
+    ovs.forEach(o=>o.classList.toggle('on',sc.vis.includes(o.id)));
+    if(!sc.vis.includes('bands'))$('bands').classList.remove('focus10');
+    if(cur!==15)court.classList.remove('dim');
+    if(cur!==0){if(revA)cancelAnimationFrame(revA);$('ccr').setAttribute('y',-40);$('ccr').setAttribute('height',520);}
+    if(sc.from&&!reduced){vb=frameFor(sc.from);setVB(vb);}
+    stage.classList.toggle('noscrim',!!sc.full);
+    stage.style.setProperty('--ct',((sc.split||.58)*100)+'%');
+    camTo(sc.cam,sc.camDur||1100,sc.full,sc.split);
+    if(sc.enter)sc.enter(token);
+  }
+  function setPlay(p){playing=p;bPlay.textContent=p?'일시정지':'재생';bPlay.setAttribute('aria-label',p?'일시정지':'재생');}
+  function tick(now){
+    const dt=now-last;last=now;
+    if(playing){elapsed+=dt;const k=Math.min(1,elapsed/durs[cur]);fills[cur].style.width=(k*100)+'%';
+      if(k>=1){if(cur<caps.length-1)show(cur+1);else{setPlay(false);bPlay.textContent='처음부터';}}}
+    requestAnimationFrame(tick);
+  }
+  stage.addEventListener('click',e=>{if(e.target.closest('.controls'))return;const r=stage.getBoundingClientRect();if(e.clientX-r.left<r.width*.3)show(cur-1);else show(cur+1);});
+  $('bPrev').addEventListener('click',()=>show(cur-1));
+  $('bNext').addEventListener('click',()=>show(cur+1));
+  bPlay.addEventListener('click',()=>{if(!playing&&cur===caps.length-1&&elapsed>=durs[cur]){show(0);setPlay(true);return;}setPlay(!playing);});
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(cur+1);else if(e.key==='ArrowLeft')show(cur-1);else if(e.key===' '&&document.activeElement===document.body){e.preventDefault();setPlay(!playing);}});
+  let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>camTo(S[cur].cam,0,S[cur].full,S[cur].split),120);});
+  setPlay(playing);show(0);requestAnimationFrame(t=>{last=t;tick(t);});
+})();
+</script>
+
+</body></html>
