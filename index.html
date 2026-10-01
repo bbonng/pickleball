@@ -207,6 +207,11 @@
   .q-ask{font-size:14.5px}
   .q-score{font-size:13px;color:var(--muted);padding-top:10px;border-top:1px dashed var(--rule);font-variant-numeric:tabular-nums}
   .hint{margin:0;font-size:13px;color:var(--muted)}
+  .quiz{display:grid;gap:6px;padding:16px 18px;border-radius:12px;background:var(--ink);color:#fff;text-decoration:none}
+  .quiz-t{font-size:18px;font-weight:800;letter-spacing:-.01em}
+  .quiz-d{font-size:14px;line-height:1.5;color:#E6E4DC}
+  .quiz-go{justify-self:start;margin-top:4px;padding:8px 14px;border-radius:999px;background:var(--ball);color:var(--ink);font-size:14px;font-weight:800}
+  .quiz:focus-visible{outline:3px solid var(--ball);outline-offset:3px}
 
   footer{padding:28px 20px calc(32px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted);line-height:1.6;max-width:720px;margin:0 auto}
 
@@ -374,6 +379,13 @@
       <div class="rail papers">
         <button type="button" class="sheet" data-title="2026 시험지"><img src="e26.jpg" alt="2026 시험지" loading="lazy"></button>
       </div>
+      <p class="sub">서술형 전 활동</p>
+      <a class="quiz" href="https://bbonng.github.io/picklequiz/" target="_blank" rel="noopener">
+        <span class="quiz-t">피클볼 코트의 비밀</span>
+        <span class="quiz-d">아이들이 서술형 평가 전에 푸는 퀴즈입니다. OX와 4지선다로 규칙을 한 번 더 짚습니다.</span>
+        <span class="quiz-go">풀어 보기 →</span>
+      </a>
+      <p class="hint">끝까지 풀면 그 휴대폰에서는 잠깁니다. 한 번씩만 풀어 보세요.</p>
       <p class="sub" id="d-answers">학생 답안</p>
       <div class="rail">
         <figure class="ans">
