@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>피클볼 수업나눔 대본</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* 패드용 대본: 위 막대에서 글자 크기·테마·화면 켜두기·타이머, 파트 버튼으로 바로 이동 */
+:root{
+  --bg:#FBFAF5; --ink:#141613; --soft:#6A6E66; --rule:#DCDDD3;
+  --cue-bg:#F2D22E; --cue-ink:#141613; --pause:#C2412D; --bar:#FFFFFF;
+  --fs:30px;
+  --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#111311; --ink:#ECEDE6; --soft:#9DA196; --rule:#2C302B;
+  --cue-bg:#F2D22E; --cue-ink:#141613; --pause:#FF8A73; --bar:#1A1D19; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);word-break:keep-all;overflow-wrap:break-word}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--cue-bg);outline-offset:2px}
+
+.bar{position:sticky;top:0;z-index:10;background:var(--bar);border-bottom:1px solid var(--rule);padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
+.row{max-width:60rem;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row + .row{margin-top:8px}
+.parts{display:flex;gap:6px;flex-wrap:wrap;flex:1 1 auto;min-width:0}
+.parts button{border:1.5px solid var(--rule);background:none;border-radius:10px;padding:8px 12px;font-size:16px;font-weight:700;min-width:46px}
+.parts button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tools button{border:1.5px solid var(--rule);background:none;border-radius:10px;padding:8px 12px;font-size:16px;font-weight:700}
+.tools .size{font-size:15px;color:var(--soft);font-variant-numeric:tabular-nums;min-width:3.2em;text-align:center}
+.tools button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.timer{font-variant-numeric:tabular-nums;font-size:20px;font-weight:700;min-width:4.2em;text-align:center}
+
+main{max-width:60rem;margin:0 auto;padding-inline:24px;padding-block:24px 40vh;font-size:var(--fs);line-height:1.75}
+section{scroll-margin-top:130px;padding-top:28px}
+h2{font-size:.8em;font-weight:900;margin:0 0 .6em;padding-bottom:.35em;border-bottom:3px solid var(--ink);display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+h2 small{font-size:.6em;font-weight:500;color:var(--soft);white-space:nowrap}
+h3{font-size:.78em;font-weight:900;margin:1.4em 0 .4em}
+p{margin:0 0 .9em;font-weight:500}
+.note{font-size:.62em;color:var(--soft);font-weight:500;margin:.4em 0 .9em}
+.cue{display:inline-flex;align-items:center;gap:.45em;background:var(--cue-bg);color:var(--cue-ink);font-weight:900;border-radius:.3em;padding:.12em .5em;margin:.2em 0 .6em;font-size:.82em}
+.cue b{font-size:.75em;background:var(--cue-ink);color:var(--cue-bg);border-radius:.2em;padding:0 .35em}
+.pause{display:inline-block;border:3px solid var(--pause);color:var(--pause);font-weight:900;border-radius:.3em;padding:.1em .5em;margin:.2em 0 .8em;font-size:.72em}
+blockquote{margin:0 0 .9em;padding-left:.7em;border-left:6px solid var(--cue-bg);font-weight:700}
+.add{text-decoration:underline;text-decoration-color:var(--cue-bg);text-decoration-thickness:.18em;text-underline-offset:.15em}
+.end{text-align:center;color:var(--soft);font-size:.6em;margin-top:3em}
+@media (max-width:700px){.tools .lbl{display:none}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="row">
+    <nav class="parts" id="parts" aria-label="파트 이동"></nav>
+  </div>
+  <div class="row">
+    <div class="tools">
+      <button type="button" id="smaller" aria-label="글자 작게">가−</button>
+      <span class="size" id="size">30</span>
+      <button type="button" id="bigger" aria-label="글자 크게">가＋</button>
+      <button type="button" id="theme"><span class="lbl">어둡게</span></button>
+      <button type="button" id="wake">화면 켜두기</button>
+    </div>
+    <div class="tools" style="margin-left:auto">
+      <span class="timer" id="clock">00:00</span>
+      <button type="button" id="tStart">시작</button>
+      <button type="button" id="tReset">0으로</button>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+<section id="p1" data-label="1">
+<h2>Part 1 · 시작 전 안내 + 서론 <small>6분</small></h2>
+<h3>시작 전 — 휴대폰 안내</h3>
+<p>QR을 찍으시고 "누르면 시작합니다"까지만 눌러 두세요. 사진이 몇 장 지나가고 노란 화면에서 멈춥니다. 앞으로는 제가 번호를 부르면 그 장으로 넘겨 주시면 됩니다. 먼저 넘겨 보셔도 괜찮습니다. 단어밖에 없어서, 무슨 이야기인지는 제가 말씀드려야 풀립니다.</p>
+<h3>서론</h3>
+<div class="cue"><b>01</b>공간</div>
+<p>안녕하십니까. 대구일중 체육교사 이길봉입니다.</p>
+<p>학기중에 피클볼 연수를 위해 이렇게 모여주셨습니다. 사실 전 걱정이 됩니다. 제가 이 앞에서 연수를 할 만한 자격이 있는 사람인지 모르겠습니다.</p>
+<p>전 2022년, 2023년에 피클볼이라는 스포츠를 영상으로 접했습니다. 관련 뉴스를 보면서 '와 급격하게 성장하고 있구나, 쉽겠는데' 싶었습니다. 테니스나 탁구보다 학생들이 쉽게 하겠다, 소프트테니스의 단점을 완벽하게 커버하겠구나. 그런 생각이 들어서 그 당시 구청 지원금으로 약 300만원 정도의 장비를 구입했습니다.</p>
+<p>그리고 다음 해에 여기 대구일중에 근무하게 되었습니다.</p>
+<p>지금은 운동장이 잘 정비되어 보이시겠지만, 그 당시에는 이 옆에 보이는 침산유치원을 지을 때라 운동장은 사용이 불가했습니다. 6명의 체육교사가 강당과 저기 보이는 농구장 말고는 수업할 공간이 없었습니다.</p>
+<p>전 체육수업에서 무엇보다 공간을 중요하게 생각하는 교사입니다. 그래서 단독으로 수업할 수 있는 공간, 이 테니스장에서, 지금 여러분이 서 계신 바로 여기에서 수업을 해야겠다고 생각했습니다.</p>
+<p>테니스를 조금 칠 줄 알고, 탁구를 그럭저럭 하고, 배드민턴은 그저 가르칠 수 있는 수준인 제가 말입니다. 매직테니스 장비가 있는 것을 보고 그걸 할까 생각도 해봤습니다만, 찾아보니 영유아들이 하는 운동이었습니다. 학생들에게 뭘 알려주지, 학생들이 무엇을 배울까. 여기서 한참 고민했습니다.</p>
+<p>그러다 전 학교에 전화를 했습니다. 피클볼 수업 할 거냐고 물어보니 아무 대답이 없길래, 1년만 빌려달라고 하며 몽땅 다 들고 왔습니다.</p>
+<p>그렇게 <span class="add">2024년</span>에 이 공간에서 첫 번째 피클볼 수업을 시작했고, 오늘 그 이야기를 해보고자 합니다.</p>
+<p>지금부터 약 30분 정도 제 수업 이야기를 하고, 나머지 시간은 저와 효성여고 권대용 선생님과 함께 피클볼 기술과 경기를 실제로 한번 해보는 시간을 가져보겠습니다. 권 선생님은 현재 전국 1부에서 시합을 하고 계시고, 정말 유명한 피클볼 선수 및 유튜버와 우승을 다투면서 경기를 하고 계십니다.</p>
+<div class="cue"><b>02</b>2시간</div>
+<p>여기 오신 선생님들 중 배드민턴 A급도 계시고 테니스 신인부 이상의 실력자도 계시네요. 그렇지 않더라도 2시간 안에 체육선생님들은 경기까지 재미있게 하실 거라고 생각합니다.</p>
+<p>그때 제 감이 맞았는지는 조금 뒤에 숫자로 보고, 먼저 이 종목이 어떻게 생겼는지부터 말씀드리겠습니다.</p>
+</section>
+
+<section id="p2" data-label="2">
+<h2>Part 2 · 피클볼이란 <small>3분</small></h2>
+<p class="note">화면은 02 「2시간」에서 시작</p>
+<p>피클볼은 1965년 미국에서 시작했습니다. 시애틀 앞바다 베인브리지 섬, 조엘 프리처드의 집 뒷마당이었습니다.</p>
+<p>여름 오후에 애들이 심심하다길래 이웃집 식구들까지 데리고 배드민턴 코트로 나갔는데,</p>
+<div class="cue"><b>03</b>셔틀콕</div>
+<p>셔틀콕이 없었습니다. 그래서 탁구 라켓하고 구멍 뚫린 플라스틱 공을 들고 왔습니다. 공이 아스팔트에서 잘 튀길래, 네트를 애들 허리 높이로 내렸습니다.</p>
+<p>있는 걸로 시작한 종목입니다. 저도 있는 걸로 시작했으니 비슷합니다.</p>
+<p>그런데 애들하고 어른이 같이 치면 문제가 생깁니다. 어른이 네트에 바짝 붙어서 내리찍으면 애들은 받을 수가 없습니다.</p>
+<div class="cue"><b>04</b>키친</div>
+<p>그래서 생긴 게 키친입니다. 네트 앞 약 2m 구역인데, 잘 치는 어른이 네트에 붙어서 내리찍는 걸 막으려고 만들었습니다.</p>
+<div class="cue"><b>05</b>피트 샘프라스</div>
+<p>서브도 막았습니다. 피트 샘프라스 아시는 분? 손 드시면 여기서 나이가 보입니다. 강서브와 발리, 서브 앤 발리로 세계 1위를 한 테니스 선수입니다.</p>
+<p>강력한 서브와 네트 앞 플레이로 끝내는 경기가 아니라, 같이 즐기는 랠리가 되는 경기가 되도록 서브도 언더핸드로 규정해 놨습니다.</p>
+<p>어른 아이 할 것 없이 다 같이 치려고 만든 규칙입니다. 잘하는 사람을 막아서 못하는 사람이 같이 칠 수 있게 한 겁니다. 학교 수업이랑 조건이 같습니다.</p>
+<p>나중에 나오는 규칙 하나를 더하면 피클볼의 본질이 보일 겁니다.</p>
+<p>이름의 유래, 지금 미국과 아시아에서 얼마나 하는지, 다른 네트형 종목과 뭐가 다른지는 자료 맨 위 「피클볼이란?」에 정리해 두었습니다. 학생들이 좋아하는 이야기라 수업 때 한번 써먹으셔도 좋습니다.</p>
+<p>하나만 말씀드리면, 말레이시아 슬랑오르주는 올해 5월에 학교 수업을 위해 교사 100명을 연수했습니다. 오늘 이 자리와 같은 일이 거기서도 있었던 겁니다. 대구도 11월에 학생 대회를 하겠다는 공문이 일찍 나왔습니다.</p>
+<p class="note">화면은 05에 둔 채 Part 3으로</p>
+</section>
+
+<section id="p3" data-label="3">
+<h2>Part 3 · 수업 <small>7분</small></h2>
+<p class="note">화면은 05 「피트 샘프라스」에 둔 채 시작</p>
+<p>전 이 테니스장에서 8개의 네트를 깔고 수업을 합니다. 라인이 없어서 사실 제대로 된 수업을 하냐라는 생각이 들긴 합니다만, 피클볼 수업은 이렇게 구성했습니다. 네트와 공은 수업 전에 제가 먼저 나와 깔아 둡니다. 45분은 전부 아이들이 치는 시간으로 쓰고 싶어서입니다.</p>
+<p>수업 목표부터 말씀드리면, 저한테 배운 학생은 경기를 즐길 수 있어야 한다, 스포츠를 향유할 수 있어야 한다. 이겁니다.</p>
+<p>경기를 하려면 서브를 넣을 수 있어야 하고, 서브를 리턴해야 하고, 네트 키친존 뒤에서 발리를 할 수 있어야 합니다. 백핸드 스트로크가 안 되더라도 경기를 할 수 있어야 하고, 경기 규칙과 방법을 알고 이야기할 수 있어야 한다. 그런 생각이었습니다.</p>
+<p>사실 배드민턴 수업과 별반 다를 게 없습니다.</p>
+<h3>1차시. 그립법과 공튀기기.</h3>
+<p>진짜로 정확하게 1시간 이걸로 수업했습니다. 1단계 손등 하늘로 가게 해서 튀기기, 2단계 손바닥 위로 그립 잡고 튀기기, 3단계 양면 쓰기, 4단계 라켓 면이 아닌 날로 치기. 이걸 시키니 70개가량 하는 친구들도 있더라고요. 그리고 5단계 공 세우기, 6단계 세운 공으로 라켓 면 돌리기. 5단계 6단계까지 가면 안 되는 친구들도 있으니, 3단계까지 30개 50개 치는 학생들은 이것도 알려주고 하시면 도움이 되긴 합니다.</p>
+<p>하지만 30명의 학생 중 약</p>
+<div class="cue"><b>06</b>20%</div>
+<p>20%는 협응이 되지 않아 전혀 이걸 할 수가 없었습니다. 이 20%는 평가 이야기에서 다시 나옵니다.</p>
+<h3>2차시. 주고받기.</h3>
+<p>네트는 깔지 않았습니다. 그냥 제한된 공간을 주고 주고받기를 시켰습니다. 나중에는 전체 학생끼리 주고받기 오래 하기를 시켜봤습니다. 그냥 레크리에이션이죠. 주면 못 받지만 띄우면 서로 뛰어와서 받을 수 있다. 그렇게 해서 2차시까지는 이런 활동들을 하면서 피클볼과 친해지기를 했습니다.</p>
+<p>3차시로 넘어가기 전에, 앞에서 말씀드린 키친을 하나만 더 짚겠습니다.</p>
+<p>우리가 테니스에서 하는 벽 발리 같은 거 못 합니다. 좀 더 말씀드리면 발리하고 키친 라인 안으로 떨어지는 것도 안 됩니다. 두 발을 붙이고 해야 됩니다. 그니깐 키친은 들어갈 수 없는 공간이 아닙니다. 들어갈 수는 있는데, 바운드되지 않은 공을 칠 수 없는 공간입니다. 그렇게 하면 다양한 전략이 만들어지는데, 이건 나중에 권대용 선생님께 들으시고 전 수업 이야기를 이어가겠습니다.</p>
+<h3><span class="add">3차시. 네트를 놓고 주고받기.</span></h3>
+<p><span class="add">네트를 놓고 주고받기를 했습니다. 이때는 키친은 따지지 않고 넘기기만 하면 됩니다. 키친은 나중에 적용합니다.</span> 뭐 포핸드 백핸드 가르쳐볼라 했는데 불가능하더라고요. 그저 네트를 넘기는 데 목표를 뒀습니다. 키친존 앞에서 주고받기 할 수 있을 정도. 그게 되면 딩크샷을 가르쳤을 텐데 사실상 안 됐습니다.</p>
+<h3>서브.</h3>
+<p>서브 평가를 하기 위한 서브 수업을 했습니다. 안정적으로 이 공간에 떨어뜨리는 평가인데 참 쉬워 보입니다. 쉬워야 합니다. 하지만 안 되더라고요.</p>
+<h3>리턴 앤 발리.</h3>
+<p>서브가 끝나고 난 뒤에는 리턴 앤 발리 수업을 했고 포핸드 리턴으로 진행하였습니다. 백핸드 방향으로 서브를 제가 넣지 않고 포핸드 쪽으로 주려고 했습니다.</p>
+<p>처음엔 서브를 잘하는 학생들이 나눠서 연습을 하고 평가를 했었는데 이게 수준별 수업이 안 되더라고요. 야외 테니스장이라서 바람에 따라 서브가 어려울 수도 쉬울 수도 있어서, 작년부턴 제가 모든 서브를 다 넣고 있습니다.</p>
+<p>그래서 소위 말하는 똥볼은 엄청 잘 치게 됐습니다. 한 반에 30~31명, 볼박스 150개, 10번 정도 도니깐</p>
+<div class="cue"><b>07</b>1500</div>
+<p>매시간 1,500개 이상은 서브만 넣었습니다.</p>
+<p>리턴 앤 발리는 피클볼의 독특한 규칙인 투바운스 룰을 적용하기 위해서 만들었습니다. 투바운스 룰은 발리는 두 번의 바운스가 일어나고 난 다음에 가능하다는 룰입니다. 서브를 넣은 공도 바운드를 하고 쳐야 하고, 리턴된 공도 바운드 후 쳐야 합니다. 피트 샘프라스처럼 서브 넣고 네트로 뛰어드는 걸 막아 둔 규칙입니다. 그래서 피클볼은 서브한 쪽이 아니라 리턴한 쪽이 먼저 네트를 잡습니다. 리턴을 길게 치고 키친 라인까지 올라가라고 가르치는 이유가 여기 있습니다.</p>
+<p>여기까지가 수업입니다. 이제 평가 이야기를 하겠습니다. 실은 오늘 제일 하고 싶은 이야기입니다.</p>
+</section>
+
+<section id="p4" data-label="4">
+<h2>Part 4 · 평가 — 2024년 이야기 <small>3분</small></h2>
+<p class="note">화면은 07 「1500」에서 시작</p>
+<div class="cue"><b>08</b>1분</div>
+<p>먼저 조건부터 말씀드리겠습니다.</p>
+<p>주 1차시입니다. 한 반에 31명입니다. 45분 수업, 땡 하고 시작해도 한 명을 봐줄 수 있는 시간은 1분 남짓입니다.</p>
+<div class="pause">멈추기 — 3초</div>
+<p>2024년에 저는 경기 평가지를 만들었습니다. 제대로 만들었습니다. 한 학생당 열두 항목을 상·중·하로 보는 체크리스트였습니다. 31명이면 372번, 45분이면 7초에 한 번씩 판정해야 하는 평가지였습니다. 그런데 경기를 할 시간이 없었습니다. 주 1차시로는 수행평가를 하는 것만도 힘들었습니다. 사실상 수업을 달렸습니다.</p>
+<p>서브를 할 수 있고 리턴을 할 수 있으면 경기가 될 거라고 생각했습니다.</p>
+<p>아니더라고요.</p>
+<p>지나고 나서 보니 제 수업 목표는 향유였는데, 제가 만든 평가지는 경기력을 재고 있었습니다. 목표와 평가가 따로 놀았던 겁니다. 아이들은 제가 세워놓은 그 수준에 닿을 방법이 애초에 없었습니다.</p>
+<div class="cue"><b>09</b>수업 영상</div>
+<p>그래서 지금은 이렇게 수업합니다. 올해 수업을 2초씩 이어 붙인 영상입니다.</p>
+<div class="pause">영상이 도는 동안 말 멈추기 — 약 30초</div>
+</section>
+
+<section id="p5" data-label="5">
+<h2>Part 5 · 평가 — 지금은 이렇게 <small>6분</small></h2>
+<p class="note">화면은 09 「수업 영상」에서 시작</p>
+<p>그래서 2026년엔 수준을 내렸습니다.</p>
+<p>2.5 수준이면 되고,</p>
+<div class="cue"><b>10</b>3.0</div>
+<p>3.0이면 무조건 만점입니다. 3.0은 피클볼 실력 점수(DUPR)인데, 동호회에 가서 처음 만난 사람과 한 게임 즐길 수 있는 정도입니다. 향유할 수 있는 수준으로 내렸습니다. 주고받기만 되면 80점을 줍니다.</p>
+<p>그래서 계획서의 만점 문장에서도 백핸드, 딩크샷 같은 기술 이름을 지웠습니다. 기술 목록을 세지 않고, 경기가 되는지 하나만 봅니다.</p>
+<p>경기가 어려운 친구와 같은 조가 되면, 그 조는 제가 직접 상대가 됩니다. 서브, 딩크, 베이스라인 랠리 순서로 봅니다. 1차시에 말씀드린 20% 아이들도 점수를 받을 길이 있어야 했습니다.</p>
+<p>평가를 제대로 안 했다고 생각하실 수 있습니다. 저도 이게 맞는 평가인지 모르겠습니다. 오늘 끝나고 알려주시면 배우겠습니다.</p>
+<p>평가는 네 가지입니다. 서브 20점, 리턴 앤 발리 30점, 경기 40점, 서술형 10점입니다. 배점은 3년 동안 그대로였고, 바뀐 건 만점 문장입니다.</p>
+<p>서술형 이야기를 하겠습니다. 저도 서술형 평가를 꼭 해야 하나 생각을 했습니다. 하지만 전 충분히 학생들과 서술형으로 나눌 이야기가 많다고 생각해서 하고 있고, 무엇보다 제게 배운 학생이 키친도 투바운스도 모른 채 "체육 시간에 피클볼 배웠다"고 말하는 게 싫었습니다.</p>
+<p>올해 문항은 이렇습니다. 피클볼에서는 서브를 아무리 잘 넣어도 서브 한 방으로 점수가 나는 일이 거의 없고, 선수들이 네트 앞 구역에는 함부로 들어가지 않습니다. 그 장면을 만드는 규칙을 쓰라는 문항입니다.</p>
+<div class="cue"><b>11</b>답안</div>
+<p>아이들이 쓴 걸 세 장만 읽어드리겠습니다.</p>
+<blockquote>서브는 무기가 아닌 랠리를 시작하기 위한 것이다.</blockquote>
+<blockquote>상대가 에러하거나 발리할 수 있게 공을 길게 주는 실수를 하는 기회를 엿보고, 네트 앞에서 짧은 공을 주고받게 된다.</blockquote>
+<blockquote>이 두 규칙 덕분에 피클볼이 더욱 재미있고, 흥미진진해지는 것이다.</blockquote>
+<p>이게 제가 오늘 가져온 증거의 전부입니다.</p>
+</section>
+
+<section id="p6" data-label="6">
+<h2>Part 6 · 교육과정 <small>2분</small></h2>
+<p class="note">화면은 11 「답안」에서 시작</p>
+<div class="cue"><b>12</b>수업을 어떻게 하면 잘합니까</div>
+<p>이제 교육과정에 대한 이야기를 해볼까 합니다.</p>
+<p>전 교육과정 전문가도 아니고 수석교사도 아닙니다. 평가를 잘하고 싶은 교사도 아니고, 그저 수업을 잘하고 싶은 교사입니다. 교육과정을 읽어보기보단 유능한 수석 선생님들께 여쭤봤고, 수업을 어떻게 하면 잘합니까라는 질문을 드렸습니다. 백워드로 수업을 설계해라 말씀을 하시길래 그렇게 설계했습니다.</p>
+<p>그렇게 하다 보니 2022 개정교육과정의 역량과 성취수준에도 얼추 맞춰서 하는 수업이 됐다고 생각하고 있습니다. 맞추려고 한 게 아니라, 하다 보니 맞더라는 쪽에 가깝습니다.</p>
+<p>다만 하나는 못 맞췄습니다. [9체02-17]은 경기 기능을 "수행하고 향상한다"인데, 향상한다를 평가할 방법은 아직 찾지 못했습니다. 그래서 내년에 해 보고 싶은 게 생겼습니다.</p>
+<p>그리고 IB 수업도 이 피클볼로 하는데 나쁘지 않을 것 같다라는 생각도 조금 있습니다. 실제로 IB 수업을 해본 적도 없습니다만, 저와 함께 수업에 대해 이야기하는 선생님들께서 하신 말씀을 들어보면 알기와 이해하기, 수행 계획하기, 적용과 수행, 성찰과 개선에서 충분히 할 만한 것이 있지 않나 같은 생각을 해봅니다. 하지만 저도 IB 연수를 들으면 좌절할 거고, 건방졌다는 생각이 들 것 같긴 합니다.</p>
+</section>
+
+<section id="p7" data-label="7">
+<h2>Part 7 · 마무리 + 코트 인계 <small>2분</small></h2>
+<p class="note">화면은 12에서 시작 · 번호 부르고 2~3초 비 온 코트를 보게 둔 뒤 말 시작</p>
+<div class="cue"><b>13</b>공간 — 비 온 뒤 빈 코트</div>
+<p>처음에 자격 이야기를 했습니다. 3년 지나고 보니 저한테 있었던 건 자격이 아니라 이 공간이었습니다.</p>
+<p>전 이 공간에서 3년간 수업할 수 있어서 행복했고, 공간을 그저 잘 활용했다고 생각합니다. 내년에도 이 공간을 쓸 수 있다면 피클볼을 하고 싶고, 내년에는 3구 드롭과 3구 드라이브를 한번 가르쳐보고 싶습니다. 진짜 1, 2학기를 다 피클볼을 하고 싶어요. 그래서 학생들이 즐길 수 있게 해주고 싶습니다.</p>
+<p>제 능력이 부족한 건지, 아님 수업 시수가 작은 건지, 아님 학생이 많아서 그런 건지 모르겠지만, 학생의 배움은 제 성에 차지 않습니다.</p>
+<p>평가를 어떻게 보는지 더 궁금하신 분은 지금 화면의 "공간" 글자를 다섯 번 빠르게 두드려 보세요. 평가 장면이 알아서 넘어가니 그냥 보시면 됩니다.</p>
+<p class="add">그리고 오늘 제가 하고 싶은 이야기는 주소 뒤에 /book을 붙이시면 글로 다 있습니다. 궁금하신 분은 읽어 보십시오.</p>
+<p>수업 나눔은 여기까지 하고, 이제 라켓 들고 코트로 들어가보시죠.</p>
+<h3>코트 인계</h3>
+<p>먼저 몸풀기는 딩크샷입니다. 키친 라인 뒤에서 두 분이서 서로 마주 보면서 쳐보시기 바랍니다. 그립은 컨티넨탈로 잡고 시작하시죠.</p>
+<p class="end">— 끝 —</p>
+</section>
+
+</main>
+
+<script>
+(function(){
+  const root=document.documentElement,$=id=>document.getElementById(id);
+  const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  /* 글자 크기 */
+  let fs=parseInt(store.get('script-fs')||'30',10); if(!(fs>=18&&fs<=72))fs=30;
+  const applyFs=()=>{root.style.setProperty('--fs',fs+'px');$('size').textContent=fs;store.set('script-fs',fs);};
+  $('bigger').addEventListener('click',()=>{fs=Math.min(72,fs+4);applyFs();});
+  $('smaller').addEventListener('click',()=>{fs=Math.max(18,fs-4);applyFs();});
+  applyFs();
+
+  /* 밝게/어둡게 */
+  const applyTheme=t=>{if(t==='dark'){root.setAttribute('data-theme','dark');$('theme').querySelector('.lbl').textContent='밝게';$('theme').classList.add('on');}
+    else{root.removeAttribute('data-theme');$('theme').querySelector('.lbl').textContent='어둡게';$('theme').classList.remove('on');}store.set('script-theme',t);};
+  applyTheme(store.get('script-theme')||'light');
+  $('theme').addEventListener('click',()=>applyTheme(root.getAttribute('data-theme')==='dark'?'light':'dark'));
+
+  /* 화면 켜두기 */
+  let lock=null,want=false;
+  async function grab(){try{lock=await navigator.wakeLock.request('screen');lock.addEventListener('release',()=>{lock=null;});}catch(e){lock=null;}}
+  $('wake').addEventListener('click',async()=>{
+    if(!('wakeLock' in navigator)){$('wake').textContent='이 기기는 지원 안 함';return;}
+    want=!want; if(want){await grab();$('wake').classList.toggle('on',!!lock);$('wake').textContent=lock?'화면 켜두는 중':'화면 켜두기 실패';}
+    else{try{lock&&lock.release()}catch(e){}lock=null;$('wake').classList.remove('on');$('wake').textContent='화면 켜두기';}
+  });
+  document.addEventListener('visibilitychange',()=>{if(want&&document.visibilityState==='visible'&&!lock)grab();});
+
+  /* 타이머 */
+  let t0=0,acc=0,run=false,iv=null;
+  const show=()=>{const s=Math.floor((acc+(run?Date.now()-t0:0))/1000);$('clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+  $('tStart').addEventListener('click',()=>{if(run){acc+=Date.now()-t0;run=false;clearInterval(iv);$('tStart').textContent='계속';}
+    else{t0=Date.now();run=true;iv=setInterval(show,500);$('tStart').textContent='멈춤';}show();});
+  $('tReset').addEventListener('click',()=>{acc=0;t0=Date.now();if(!run)$('tStart').textContent='시작';show();});
+
+  /* 파트 이동 */
+  const secs=[...document.querySelectorAll('main section')],nav=$('parts');
+  const btns=secs.map(s=>{const b=document.createElement('button');b.type='button';b.textContent=s.dataset.label;
+    b.setAttribute('aria-label','Part '+s.dataset.label+'로 이동');b.addEventListener('click',()=>s.scrollIntoView({behavior:'smooth',block:'start'}));nav.appendChild(b);return b;});
+  const mark=()=>{const y=window.scrollY+160;let k=0;secs.forEach((s,i)=>{if(s.offsetTop<=y)k=i;});btns.forEach((b,i)=>b.classList.toggle('on',i===k));};
+  window.addEventListener('scroll',mark,{passive:true});mark();
+})();
+</script>
+</body>
+</html>
