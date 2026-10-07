@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>피클볼 수업 나눔 책</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Song+Myung&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: a pocket essay book. Photo cover → one chapter per screen → quiet "다음" rule at each chapter's foot. Paper, ink and the court's own green. */
+:root{
+  --paper:#F2F3EC;
+  --ink:#1B211C;
+  --soft:#5B6359;
+  --rule:#D6D9CC;
+  --court:#244335;
+  --court-ink:#E9ECE2;
+  --ball:#EBCB2E;
+  --ball-dk:#C9A912;
+  --mark:#E9DC8E;
+  --accent-ink:#244335;
+  --serif:"Gowun Batang","Noto Serif KR","Nanum Myeongjo",serif;
+  --display:"Song Myung","Gowun Batang","Noto Serif KR",serif;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141814;--ink:#E5E7DD;--soft:#9EA597;--rule:#2E352D;--court:#18301F;--court-ink:#E5E7DD;--mark:#4A4417;--accent-ink:#C9D3C0;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#141814;--ink:#E5E7DD;--soft:#9EA597;--rule:#2E352D;--court:#18301F;--court-ink:#E5E7DD;--mark:#4A4417;--accent-ink:#C9D3C0;color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+button{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ball-dk);outline-offset:3px;border-radius:4px}
+
+/* ---------- shell ---------- */
+.wrap{max-width:34rem;margin:0 auto;padding-inline:20px;padding-block:0 56px}
+.view[hidden]{display:none!important}
+
+/* cover */
+#cover{min-height:100%;display:flex;flex-direction:column}
+#cover .wrap{width:100%}
+.photo{margin:0;max-width:34rem;margin-inline:auto}
+.photo img{display:block;width:100%;max-width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 40%;max-height:62vh}
+.photo figcaption{font-family:var(--sans);font-size:12px;color:var(--soft);padding:8px 20px 0;letter-spacing:.02em}
+.cover-top{padding-top:28px;display:grid;gap:14px}
+.chimg{margin:28px 0 20px}
+.chimg img{display:block;width:100%;aspect-ratio:3/4;max-height:56vh;object-fit:cover;border-radius:4px}
+.org{font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--soft)}
+.ctitle{font-family:var(--display);font-weight:400;font-size:clamp(40px,12vw,58px);line-height:1.15;margin:0;text-wrap:balance}
+.csub{font-size:18px;color:var(--ink)}
+.byline{font-family:var(--sans);font-size:14px;color:var(--soft)}
+.toc{margin-top:44px;border-top:1px solid var(--rule)}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc button{width:100%;display:grid;grid-template-columns:2.2rem 1fr auto;align-items:baseline;gap:6px;background:none;border:0;border-bottom:1px solid var(--rule);padding:14px 2px;text-align:left;cursor:pointer}
+.toc button:hover .tt{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--ball-dk)}
+.toc .tn{font-family:var(--sans);font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums}
+.toc .tt{font-size:17px}
+.toc .ta{font-family:var(--sans);font-size:13px;color:var(--soft)}
+.start{margin-top:32px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%;padding:18px 2px;border:0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);background:none;color:var(--ink);font-family:var(--serif);font-size:18px;cursor:pointer}
+.start span:last-child{font-family:var(--sans);font-size:15px}
+
+/* reader */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule)}
+.bar .in{max-width:34rem;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:var(--sans);font-size:13px;color:var(--soft)}
+.bar button{background:none;border:0;padding:4px 0;cursor:pointer;color:var(--soft)}
+.dots{display:flex;gap:6px;align-items:center}
+.dots b{width:7px;height:7px;border-radius:50%;background:var(--rule)}
+.dots b.on{background:var(--ball);box-shadow:inset -1px -1px 0 var(--ball-dk);width:9px;height:9px}
+.dots b.done{background:var(--soft);opacity:.5}
+
+.chead{padding-top:44px;padding-bottom:8px;display:grid;gap:10px}
+.cnum{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.14em;color:var(--accent-ink)}
+.chead h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,9vw,42px);line-height:1.2;margin:0;text-wrap:balance}
+.chead hr{width:28px;height:1px;border:0;background:var(--ink);margin:10px 0 0}
+
+.prose{font-size:17.5px;line-height:1.95;letter-spacing:-.003em}
+.prose p{margin:0 0 1.25em}
+.prose p.first::first-letter{font-family:var(--display);font-size:2.2em;line-height:1;float:left;margin:.08em .12em 0 0;color:var(--accent-ink)}
+.prose h3{font-family:var(--serif);font-weight:700;font-size:18px;margin:2em 0 .5em}
+.prose em{font-style:normal;font-weight:700}
+.prose .q{margin:1.6em 0;padding:0;list-style:none;display:grid;gap:14px}
+.prose .q li{position:relative;padding-left:22px;font-size:18px;line-height:1.75}
+.prose .q li::before{content:"";position:absolute;left:0;top:.35em;bottom:.35em;width:2px;background:var(--rule)}
+.prose .big{font-family:var(--display);font-size:24px;line-height:1.5;margin:1.6em 0;padding:18px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);text-align:center;text-wrap:balance}
+.prose ul.abcd{list-style:none;padding:0;margin:1.2em 0 1.6em;display:grid;gap:12px}
+.prose ul.abcd li{display:grid;grid-template-columns:28px 1fr;gap:10px;line-height:1.75}
+.prose ul.abcd b{font-family:var(--sans);font-size:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--soft);margin-top:2px}
+.tbl{overflow-x:auto;margin:1.4em 0 1.8em}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;line-height:1.5}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;color:var(--soft);font-size:12.5px;letter-spacing:.04em}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.prose p.last{margin-top:2.6em}
+.sep{text-align:center;color:var(--soft);letter-spacing:.6em;margin:2em 0}
+
+.next{margin-top:48px;border-top:1px solid var(--rule);padding-top:22px;display:grid;gap:18px}
+.next button.go{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;padding:16px 2px;border:0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);background:none;color:var(--ink);cursor:pointer}
+.go small{display:block;font-family:var(--sans);font-size:12px;letter-spacing:.1em;color:var(--soft);margin-bottom:4px}
+.go strong{font-family:var(--display);font-weight:400;font-size:21px}
+.go .arr{flex:none;font-family:var(--sans);font-size:18px;color:var(--soft)}
+.back{background:none;border:0;font-family:var(--sans);font-size:14px;color:var(--soft);cursor:pointer;justify-self:start;padding:4px 0}
+.res{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:18px 2px;font-family:var(--sans);font-size:14.5px;line-height:1.7;display:grid;gap:8px}
+.res a{font-weight:600;color:var(--ink);text-decoration-color:var(--ball-dk);text-underline-offset:4px;word-break:break-all}
+.res p{margin:0;color:var(--soft)}
+.fin{text-align:center;font-family:var(--sans);font-size:12px;letter-spacing:.12em;color:var(--soft);margin-top:12px}
+
+</style>
+</head>
+<body>
+
+
+<!-- cover -->
+<section id="cover" class="view">
+  <figure class="photo"><img src="../photo/space.jpg" alt="구름 아래 대구일중 테니스장에서 학생들이 피클볼을 치는 모습" width="840" height="1400"><figcaption>대구일중학교 테니스장</figcaption></figure>
+  <div class="wrap">
+    <div class="cover-top">
+      <div class="org">2026 대구광역시 중등체육교과연구회</div>
+      <h1 class="ctitle">수업나눔<br>자료</h1>
+      <div class="csub">피클볼 수업, 3년의 기록</div>
+      <div class="byline">대구일중학교 체육교사 이길봉</div>
+    </div>
+    <nav class="toc" aria-label="차례"><ol id="toc"></ol></nav>
+    <button class="start" id="startBtn" type="button"><span>1장 「공간」부터 읽기</span><span aria-hidden="true">→</span></button>
+  </div>
+</section>
+
+<!-- reader -->
+<section id="reader" class="view" hidden>
+  <div class="bar"><div class="in">
+    <button type="button" id="toCover">← 차례</button>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <span id="pos" style="font-variant-numeric:tabular-nums"></span>
+  </div></div>
+  <div class="wrap">
+    <header class="chead">
+      <div class="cnum" id="cnum"></div>
+      <h2 id="ctitle"></h2>
+      <hr>
+      <figure class="chimg" id="chimg" hidden><img id="chimgEl" alt=""></figure>
+    </header>
+    <article class="prose" id="body"></article>
+    <div class="next" id="next"></div>
+  </div>
+</section>
+
+<!-- chapters -->
+<template data-t="공간">
+<p class="first">이 연수를 준비하며 가장 먼저 찾아온 것은 걱정이었다. 나는 이 자리에 설 만한 사람인가.</p>
+<p>피클볼을 처음 본 건 2022년 무렵, 휴대폰으로 본 유튜브 영상에서였다. 미국에서 무섭게 번지고 있다는 뉴스가 뒤따랐다. 그때 든 생각은 '이거 쉽겠는데'였다. 테니스나 탁구보다 아이들이 쉽게 배울 수 있을 것 같았고, 소프트테니스의 단점도 메워 줄 것 같았다. 그래서 2023년 하반기, 구청 지원금으로 300만 원 정도의 장비를 샀다.</p>
+<p>이듬해 나는 대구일중으로 옮겼다. 학교 바로 옆에서는 침산유치원 공사가 한창이라 운동장을 쓸 수 없었다. 체육교사 여섯이 강당 하나와 농구장 하나를 나눠 써야 했다.</p>
+<p>나는 체육 수업에서 공간을 무엇보다 중요하게 여긴다. 그래서 눈에 들어온 곳이 테니스장이었다. 테니스부가 쓰던 곳이지만, 수업 시간에는 다른 반과 나누지 않고 쓸 수 있었다.</p>
+<p>문제는 나였다. 테니스는 조금 치고, 탁구는 그럭저럭, 배드민턴은 겨우 가르칠 수 있는 정도. 학교에 매직테니스 장비가 있길래 그걸 해 볼까 했지만, 알아보니 유아들이 하는 운동이었다. 아이들에게 무엇을 가르칠 것인가. 아이들은 여기서 무엇을 배워 갈 것인가. 한참을 고민했다.</p>
+<p>결국 전 학교에 전화를 걸었다. 피클볼 수업, 하실 겁니까. 수화기 너머에서 아무 대답이 없었다. 나는 1년만 빌려 달라고 했고, 장비를 몽땅 싣고 왔다.</p>
+<p>2024년, 그 테니스장에서 첫 피클볼 수업이 시작됐다.</p>
+</template>
+
+<template data-t="있는 걸로 시작한 종목">
+<p class="first">1965년 여름, 미국 시애틀 앞바다의 베인브리지 섬. 조엘 프리처드의 집 뒷마당에서 아이들이 심심하다고 보챘다. 어른들은 이웃 식구들까지 불러 배드민턴 코트로 나갔다. 그런데 셔틀콕이 없었다.</p>
+<p>그들은 탁구 라켓을 들고 나왔고, 구멍 뚫린 플라스틱 공을 찾아냈다. 공이 아스팔트에서 생각보다 잘 튀자 네트를 아이들 허리 높이까지 내렸다. 피클볼은 그렇게, 있는 걸로 시작했다. 나도 전 학교에서 빌려 온 장비로 시작했으니, 출발이 닮았다.</p>
+<p>그런데 아이와 어른이 같이 치는 경기에는 한 가지 문제가 생긴다. 잘하는 사람이 네트 바로 앞을 차지하고 발리하기 시작하면 상대는 공을 받아 내기가 어렵다.</p>
+<p>피클볼에는 이걸 막아 놓은 독특한 공간이 있다. <em>키친</em>, 네트 앞 약 2m 구역이다. 들어갈 수 없는 곳이 아니라, 그 안에서 바운드되지 않은 공을 칠 수 없는 곳이다. 발리를 하고 그 기세로 키친에 떨어지는 것도 안 된다.</p>
+<p>서브도 제한되어 있다. 테니스처럼 강한 오버핸드 서브를 넣을 수 없다. 기본적으로 아래에서 올려 치는 서브를 해야 한다.</p>
+<p>여기에 <em>투바운스 규칙</em>이 더해진다. 서브한 공도, 그 공을 리턴한 공도 한 번씩 바운드된 뒤에 쳐야 한다. 발리는 그다음부터 할 수 있다.</p>
+<p>세 규칙을 나란히 놓으면 이 종목이 어떤 경기를 만들고 싶은지가 보인다. 강한 서브 한 방으로도, 네트로 바로 돌진해서도 경기를 끝내기 어렵다. 결국 공을 주고받아야 한다.</p>
+<p>결국 잘하는 사람이 자기 기술만으로 경기를 독점하기 어렵게 만든 규칙들이다. 덕분에 상대적으로 기능이 낮은 사람도 랠리 안에 머물 가능성이 커진다.</p>
+<p>나는 이게 학교 체육의 조건과 꽤 닮아 있다고 생각한다.</p>
+<p>게다가 이 종목은 쉽다. 배드민턴이나 테니스를 조금 쳐 본 체육 선생님이라면 두 시간이면 경기까지 즐겁게 할 수 있다.</p>
+<p>작은 코트와 쉬운 규칙 덕분에 피클볼은 빠르게 번졌다. 미국에서는 2020년 약 420만 명이던 피클볼 인구가 2025년 2,430만 명으로 늘었다. 베트남, 말레이시아 같은 동남아시아에서도 인기가 많다. 대구에서도 11월에 학생 피클볼 대회를 연다는 공문이 일찌감치 내려왔다. 내가 수업하던 3년 사이에 피클볼이 우리나라에서 이렇게 빠르게 성장할 줄은 몰랐다.</p>
+</template>
+
+<template data-t="45분은 아이들의 것">
+<p class="first">수업이 있는 날이면 나는 아이들보다 먼저 코트에 나간다. 새벽에 네트 여덟 개를 펴고 공을 바구니에 채운다. 피클볼 라인도 없는 코트에서 이게 제대로 된 수업인가 싶은 날도 있다. 그래도 종이 울리면 45분은 온전히 아이들이 치는 시간이어야 한다.</p>
+<p>목표는 하나였다. 나에게 배운 아이는 경기를 즐길 수 있어야 한다. 서브를 넣고, 서브를 받아 넘기고, 키친 라인 뒤에서 발리를 할 수 있으면 된다. 백핸드가 서툴러도 경기는 할 수 있어야 하고, 규칙을 알고 자기 말로 설명할 수 있어야 한다. 돌아보면 배드민턴 수업과 크게 다르지 않다.</p>
+<h3>첫 시간, 공만 튀겼다</h3>
+<p>정말로 한 시간 내내 공만 튀겼다. 손등을 하늘로 향하고 튀기기, 손바닥을 위로 해서 튀기기, 라켓 양면을 번갈아 쓰기, 라켓 날로 치기. 70개 가까이 쳐 내는 아이가 나왔다. 3단계까지 서른 개, 쉰 개씩 치는 아이들에게는 공 세우기와 세운 공으로 라켓 면 돌리기까지 알려 주었다.</p>
+<p>그러나 서른 명 가운데 여섯 명쯤, 20%의 아이들은 공 튀기기를 거의 하지 못했다. 협응이 아직 되지 않는 아이들이었다. 이 아이들 이야기는 평가에서 다시 꺼내려 한다.</p>
+<h3>둘째 시간, 네트 없이</h3>
+<p>좁은 공간을 정해 주고 주고받기만 했다. 나중에는 반 전체가 공 하나를 오래 이어 가는 놀이를 했다. 세게 보내면 아무도 못 받지만, 높이 띄워 주면 누군가 뛰어와 받는다. 아이들은 그걸 몸으로 먼저 알았다.</p>
+<h3>셋째 시간, 네트를 놓고</h3>
+<p>네트를 놓고 주고받기를 했다. 이때는 키친을 따지지 않는다. 네트를 넘기기만 하면 된다. 키친 규칙은 나중에 적용한다. 포핸드와 백핸드를 가르쳐 보려던 계획은 금세 접었다. 딩크샷까지 가르치고 싶었지만, 사실상 거기까지는 가지 못했다.</p>
+<h3>서브</h3>
+<p>서브는 정해진 구역에 안정적으로 떨어뜨리면 된다. 말로는 쉽고, 쉬워야 맞다. 그런데 아이들에게는 그게 쉽지 않았다.</p>
+<h3>리턴 앤 발리</h3>
+<p>리턴 앤 발리는 투바운스 규칙을 수업으로 옮긴 활동이다. 투바운스 규칙 때문에 피클볼에서는 리턴한 쪽이 먼저 네트 앞에 설 수 있다. 그래서 리턴을 길게 치고 키친 라인까지 올라가라고 가르친다. 서브는 아이들이 받기 편한 포핸드 쪽으로 넣어 준다.</p>
+<p>처음에는 서브를 잘 넣는 아이들이 나눠서 넣어 주었다. 그런데 야외 코트라 바람에 따라 서브가 쉬워지기도, 어려워지기도 했다. 그래서 작년부터는 모든 서브를 내가 넣는다. 한 반 서른한 명, 공 150개가 든 바구니, 열 바퀴. 한 시간에 1,500개가 넘는다. 덕분에 높이 띄운 공은 꽤 잘 치게 됐다.</p>
+</template>
+
+<template data-t="7초에 한 번">
+<p class="first">평가 이야기는 조건부터 꺼내야 한다. 일주일에 한 시간, 한 반 서른한 명, 수업은 45분. 종이 울리자마자 시작해도 한 학생 앞에 서 있을 수 있는 시간은 1분 남짓이다.</p>
+<p>2024년, 나는 경기 평가지를 만들었다. 공들여 만들었다. 한 학생마다 열두 항목을 상·중·하로 판정하는 체크리스트였다. 서른한 명이면 372번. 45분 안에 끝내려면 7초에 한 번씩 판정을 내려야 하는 종이였다.</p>
+<p>그 종이를 들고 코트에 섰지만, 정작 경기를 할 시간이 없었다. 주 1시간으로는 수행평가를 치르는 것만도 숨이 찼다. 진도를 쫓기 바빴다.</p>
+<p>서브가 들어가고 리턴이 되면 경기는 저절로 될 줄 알았다.</p>
+<p class="big">되지 않았다.</p>
+<p>한참 뒤에야 알았다. 내 수업의 목표는 즐기는 것이었는데, 내가 만든 평가지는 경기력을 재고 있었다. 목표와 평가가 서로 다른 곳을 보고 있었다. 학생들에게는 내가 그어 둔 선까지 갈 길이 처음부터 없었다.</p>
+</template>
+
+<template data-t="3.0이면 만점">
+<p class="first">그래서 2026년에는 기준을 내렸다. 내가 생각하는 3.0 정도면 무조건 만점이다.</p>
+<p>피클볼에서는 흔히 실력을 숫자로 이야기한다. 나는 그중 3.0 정도를, 동호회에 가서 처음 만난 사람과 규칙을 알고 한 게임을 즐길 수 있는 수준이라고 생각했다.</p>
+<p>내 수업의 목표가 경기력이 아니라 향유라면, 만점 기준도 거기에 있어야 했다. 그래서 주고받기만 어느 정도 되면 80점을 받을 수 있게 했다.</p>
+<p>계획서의 만점 문장에서는 백핸드와 딩크샷이라는 이름을 지웠다. 기술을 세는 대신 질문 하나만 남겼다. 경기가 되는가.</p>
+<p>경기가 어려운 학생이 있는 조에는 내가 직접 상대로 들어간다. 서브, 딩크, 베이스라인 랠리 순으로 함께 쳐 보며 본다. 첫 시간에 공을 튀기지 못하던 그 20%의 학생들에게도 점수에 닿는 길 하나는 열려 있어야 했다.</p>
+<p>이 기준이 옳다고 확신하는 건 아니다. 다만 2024년의 평가보다는 내가 세운 수업 목표에 가까워졌다고 생각한다. 이것이 올바른 평가인지는 아직 물음표로 남아 있다.</p>
+<div class="tbl"><table>
+<thead><tr><th>평가</th><th>배점</th></tr></thead>
+<tbody><tr><td>서브</td><td class="n">20점</td></tr><tr><td>리턴 앤 발리</td><td class="n">30점</td></tr><tr><td>경기</td><td class="n">40점</td></tr><tr><td>서술형</td><td class="n">10점</td></tr></tbody>
+</table></div>
+<p>배점은 3년 동안 한 번도 바뀌지 않았다.</p>
+<h3>서술형</h3>
+<p>서술형 평가를 꼭 해야 하나, 나도 고민했다. 그래도 학생들과 글로 나눌 이야기가 분명히 있었다. 무엇보다 내게 배운 학생이 키친도 투바운스도 모른 채 "체육 시간에 피클볼 했어"라고만 말하는 게 싫었다.</p>
+<p>올해 문항은 이런 장면에서 출발한다. 피클볼에서는 서브를 아무리 잘 넣어도 서브 한 방으로 점수가 나는 일이 거의 없다. 선수들은 네트 앞 구역에 함부로 들어가지 않는다. 그 장면을 만드는 규칙을 쓰라고 했다.</p>
+<p>학생들이 쓴 문장 가운데 세 개를 옮긴다.</p>
+<ul class="q">
+<li>서브는 무기가 아닌 랠리를 시작하기 위한 것이다.</li>
+<li>상대가 에러하거나 발리할 수 있게 공을 길게 주는 실수를 하는 기회를 엿보고, 네트 앞에서 짧은 공을 주고받게 된다.</li>
+<li>이 두 규칙 덕분에 피클볼이 더욱 재미있고, 흥미진진해지는 것이다.</li>
+</ul>
+<p>340장을 채점하는 일은 정말 힘들다. 그래도 이런 문장을 만나는 순간은 즐겁다. 학생들이 내 수업에서 무언가를 배웠다는 걸 확인하는 순간이기 때문이다.</p>
+</template>
+
+
+<template data-t="하다 보니 맞더라">
+<p class="first">나는 교육과정 전문가도, 수석교사도 아니다. 평가를 잘하고 싶은 교사라기보다 그저 수업을 잘하고 싶은 교사다. 내가 바라는 수업은 단순하다. 45분이 처음부터 끝까지 활동으로 꽉 차고, 학생들이 그 흐름을 놓치지 않고, 지난주와는 다른 무언가를 배워 가는 수업. 교육과정 문서를 펴 놓고 공부했고, 이론서도 찾아 읽었다. 그래도 내 수업에서 무엇을 바꿔야 할지는 잘 보이지 않았다. 그래서 유능한 수석 선생님을 찾아가 물었다.</p>
+<p class="big">"어떻게 하면 수업을 잘합니까?"</p>
+<p>돌아온 답은 수업을 백워드로 설계해 보라는 것이었다. 그때 나는 이해중심 교육과정이 무엇인지도 몰랐다. 그냥 백워드로 설계해 보았다.</p>
+<p>그렇게 하다 보니 2022 개정 교육과정의 역량과 성취수준에 얼추 닿는 수업이 되었다. 맞추려고 한 게 아니라, 하다 보니 맞았다는 쪽이 정직한 설명이다.</p>
+<p>맞추지 못한 것도 하나 있다. [9체02-17]은 경기 기능을 '수행하고 향상한다'고 말한다. 그런데 '향상'을 평가할 방법을 나는 아직 찾지 못했다.</p>
+<p>요즘 대구에서는 어디를 가도 IB 이야기다. 여기서 나까지 IB를 꺼내면 "또 IB야?" 하실 것 같다. 그래도 솔직히 말하면, 나는 해 보고 싶다.</p>
+<p>IB를 이야기할 만큼 전문성은 없다. 다만 IB MYP 체육은 네 가지 기준으로 학생의 배움을 본다고 하니, 내 수업에 한번 대입해 보았다.</p>
+<ul class="abcd">
+<li><b>A</b><span>지식과 이해: 서술형으로 규칙과 전술을 자기 말로 설명할 수 있지 않을까?</span></li>
+<li><b>B</b><span>수행 계획: 경기에 들어가기 전에 이번 경기에서 어떤 서브와 리턴을 할지, 어떤 공간을 노릴지 간단한 계획을 세울 수 있지 않을까?</span></li>
+<li><b>C</b><span>적용과 수행: 서브, 리턴 앤 발리, 실제 경기. 이건 지금도 하고 있다.</span></li>
+<li><b>D</b><span>성찰과 개선: 경기가 끝난 뒤 카드 한 장에 무엇이 됐고 무엇을 바꿀지를 적고, 다음 경기에서 다시 확인할 수 있지 않을까?</span></li>
+</ul>
+<p class="big">경기, 카드 한 장, 다시 경기.</p>
+<p>어쩌면 이 고리가 내가 앞에서 찾지 못했다고 한 '향상'을 볼 수 있는 방법일지도 모르겠다. 처음 경기와 두 번째 경기가 달라졌는가. 학생이 자기 문제를 알고, 하나를 바꿔 보고, 실제 경기에서 다시 시도했는가.</p>
+<p>내년에는 그걸 한번 보고 싶다.</p>
+</template>
+
+<template data-t="다시, 공간" data-img="../photo/start.jpg" data-alt="비 그친 뒤 물에 하늘과 건물이 비친 빈 테니스장">
+<p class="first">처음에 자격 이야기를 했다. 3년이 지나 돌아보니, 내게 있었던 건 자격이 아니라 이 공간이었다.</p>
+<p>이 공간에서 3년 동안 수업할 수 있어서 행복했다. 대단한 걸 했다기보다 주어진 공간을 그저 잘 썼다고 생각한다.</p>
+<p>내 능력이 모자란 건지, 수업 시수가 적은 건지, 아이들이 많은 건지는 모르겠다. 다만 아이들의 배움은 아직 내 성에 차지 않는다.</p>
+<p>이 공간을 계속 쓸 수 있다면 1학기와 2학기를 모두 피클볼로 채우고 싶다. 내년에는 3구 드롭과 3구 드라이브를 가르쳐 보고 싶다. 힘들겠지만…</p>
+<p class="last">성취기준이 말하는 경기 전략, 그걸 가르치는 법을</p>
+<p class="big">배우고 싶다.</p>
+</template>
+
+<template data-t="2026 평가 한눈에" data-label="부록">
+<p class="first">본문에서 다 하지 못한 평가 이야기를 여기에 모았다.</p>
+<p>평가 계획을 짤 때 나는 100점을 코트 위에 나눠 놓고 생각한다. 서브 20점은 베이스라인, 리턴 앤 발리 30점은 거기서 네트까지, 경기 40점은 코트 전체다. 서술형 10점은 코트에서 한 것을 자기 말로 정리하는 마지막 한 줄이다. 이렇게 놓고 보면 수업이 어디로 가야 하는지가 보인다.</p>
+<p>한 학기 17차시는 이렇게 흐른다.</p>
+<div class="tbl"><table>
+<thead><tr><th>차시</th><th>수업</th><th>평가</th></tr></thead>
+<tbody>
+<tr><td class="n">1~2</td><td>친해지기</td><td></td></tr>
+<tr><td class="n">3~7</td><td>네트 넘기기, 서브</td><td>8차시 서브</td></tr>
+<tr><td class="n">9~12</td><td>리턴 앤 발리</td><td>13차시 리턴 앤 발리</td></tr>
+<tr><td class="n">14~16</td><td>경기</td><td>경기하면서 경기평가</td></tr>
+<tr><td class="n">17</td><td></td><td>서술형</td></tr>
+</tbody></table></div>
+<p>평가 주간은 따로 두지 않는다. 서브와 리턴 앤 발리는 배운 바로 다음 시간에, 경기는 경기를 하면서 평가한다.</p>
+<h3>서브는 대각선으로, 언더핸드로</h3>
+<p>이븐 코트와 오드 코트에서 각각 대각선 서비스 코트로 보내는지를 본다. 2026년 계획서에는 처음으로 '언더핸드'라는 낱말이 들어갔다.</p>
+<p>계획서에는 '안정적으로', '정확하게' 같은 말로 수준을 적는다. 몇 개 중 몇 개라는 숫자는 쓰지 않는다. 그건 코트에서 학생 얼굴을 보며 끝까지 말로 알려 준다. 정식으로 시도하기 전에 학생의 서브를 먼저 보고, 지금 어디쯤 서 있는지, 다음 등급까지 무엇이 남았는지 일러 준다. 학생들은 이 평가가 친절하다고 한다. 다른 선생님들의 생각은 다를 수 있다.</p>
+<h3>리턴 앤 발리는 두 번 튀고 나서 네트로</h3>
+<p>투바운스 규칙을 알고, 리턴을 길게 보낸 뒤 네트로 붙는지를 본다. 이 평가 밑에는 질문이 하나 깔려 있다. 리턴을 길게 치는 것은 왜 단순한 기술이 아니라 전략적 선택일까.</p>
+<h3>경기는 단 하나, 경기가 되는가</h3>
+<p>만점 문장은 '경기 상황에 맞는 스트록과 전략을 정확히 판단하여 능숙하게 적용함'이 되었다. 기술 이름이 빠진 자리에 '판단'이 들어왔다.</p>
+<h3>서술형은 코트에서 한 것을 자기 말로</h3>
+<p>마지막 17차시다. 시험 전에 학생들은 「피클볼 코트의 비밀」이라는 퀴즈로 OX와 사지선다를 풀며 규칙을 한 번 더 짚는다. 채점은 네 요소다. 넷을 다 쓰면 10점, 셋이면 8점, 둘이면 6점, 하나 이하면 4점이다. 올해는 AI 활용 기준도 세웠다. 실기에는 쓸 수 없고, 서술형은 자료를 찾는 데까지만 쓸 수 있으며, 답은 자기 손으로 쓴다.</p>
+<p>이 모든 평가를 하나로 묶는 질문이 있다.</p>
+<p class="big">나는 공을 넘기는가,<br>경기를 만들어 가는가?</p>
+<p>공을 넘기는 데서 멈추지 않고 경기를 만들어 가는 사람이 되는 것. 처음에 말한 '경기를 즐길 수 있어야 한다'는 목표는 결국 이 질문의 다른 이름이다.</p>
+</template>
+
+<script>
+(function(){
+  const tpls=[...document.querySelectorAll('template[data-t]')];
+  const chapters=tpls.map((t,i)=>({title:t.dataset.t,html:t.innerHTML,img:t.dataset.img,alt:t.dataset.alt,label:t.dataset.label||((i+1)+'장'),num:t.dataset.label||String(i+1)}));
+  const N=chapters.length;
+  const $=id=>document.getElementById(id);
+  const cover=$('cover'),reader=$('reader');
+
+  /* table of contents */
+  const toc=$('toc');
+  chapters.forEach((c,i)=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';
+    b.innerHTML='<span class="tn">'+c.num+'</span><span class="tt"></span><span class="ta" aria-hidden="true">→</span>';
+    b.querySelector('.tt').textContent=c.title;b.addEventListener('click',()=>open(i));li.appendChild(b);toc.appendChild(li);});
+  const dots=$('dots');for(let i=0;i<N;i++)dots.appendChild(document.createElement('b'));
+
+  function open(i){
+    const c=chapters[i];
+    cover.hidden=true;reader.hidden=false;
+    $('cnum').textContent=c.label;
+    $('ctitle').textContent=c.title;
+    $('body').innerHTML=c.html;
+    if(c.img){$('chimgEl').src=c.img;$('chimgEl').alt=c.alt||'';$('chimg').hidden=false;}else{$('chimg').hidden=true;}
+    $('pos').textContent=(i+1)+' / '+N;
+    [...dots.children].forEach((d,k)=>{d.className=k===i?'on':k<i?'done':'';});
+    const nx=$('next');nx.innerHTML='';
+    if(i<N-1){
+      const go=document.createElement('button');go.type='button';go.className='go';
+      go.innerHTML='<span><small>다음 · '+chapters[i+1].label+'</small><strong></strong></span><span class="arr" aria-hidden="true">→</span>';
+      go.querySelector('strong').textContent=chapters[i+1].title;go.addEventListener('click',()=>open(i+1));nx.appendChild(go);
+    }else{
+      const r=document.createElement('div');r.className='res';
+      r.innerHTML='<p>오늘 휴대폰으로 본 화면, 「피클볼이란?」 읽기 자료, 2024 경기평가 체크리스트 원본, 3년간 채점 기준, 서술형 시험지와 답안, 수업 영상이 모두 여기 있습니다.</p><a href="https://bbonng.github.io/pickleball/" target="_blank" rel="noopener">bbonng.github.io/pickleball</a><p>마지막 화면의 "공간" 글자를 빠르게 다섯 번 두드리면 평가 장면이 열립니다.</p>';
+      nx.appendChild(r);
+      const home=document.createElement('button');home.type='button';home.className='go';
+      home.innerHTML='<span><small>끝까지 읽어 주셔서 고맙습니다</small><strong>처음으로</strong></span><span class="arr" aria-hidden="true">↺</span>';
+      home.addEventListener('click',showCover);nx.appendChild(home);
+      const f=document.createElement('div');f.className='fin';f.textContent='대구일중학교 테니스장에서 · 이길봉';nx.appendChild(f);
+    }
+    if(i>0){const bk=document.createElement('button');bk.type='button';bk.className='back';bk.textContent='← '+chapters[i-1].label+' '+chapters[i-1].title;bk.addEventListener('click',()=>open(i-1));nx.appendChild(bk);}
+    try{history.replaceState(null,'','#ch'+(i+1));}catch(e){}
+    window.scrollTo(0,0);
+  }
+  function showCover(){reader.hidden=true;cover.hidden=false;try{history.replaceState(null,'','#cover');}catch(e){}window.scrollTo(0,0);}
+  $('startBtn').addEventListener('click',()=>open(0));
+  $('toCover').addEventListener('click',showCover);
+
+  const m=/^#ch(\d+)$/.exec(location.hash);
+  if(m&&+m[1]>=1&&+m[1]<=N)open(+m[1]-1);
+})();
+</script>
+
+</body>
+</html>
